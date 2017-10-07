@@ -10,11 +10,6 @@ import MapView from 'react-native-maps';
 import Marker from '../components/Marker';
 import realm from '../realm'
 import Utils from '../Utils'
-var monthNamesShort = Utils.monthNamesShort()
-
-function formatDateToNiceString(date) {
-  return monthNamesShort[date.getMonth()] + ' ' + date.getDate() + ', ' + date.getFullYear()
-}
 
 function getRegionForCoordinates(points) {
   // points should be an array of { latitude: X, longitude: Y }
@@ -78,7 +73,7 @@ class Map extends React.Component {
        var newMarker = {}
        var location = JSON.parse(answer.location)
        var coordinate = {latitude: location.latitude, longitude: location.longitude}
-       var dateFormatted = formatDateToNiceString(answer.dateCreated)
+       var dateFormatted = Utils.formatDateToNiceString(answer.dateCreated)
        newMarker.title = dateFormatted
        newMarker.description = location.name
        newMarker.coordinate = {latitude: location.latitude, longitude: location.longitude}
@@ -142,22 +137,6 @@ class Map extends React.Component {
       </View>
     );
   }
-
-  showLightBox = () => {
-    this.props.navigator.showLightBox({
-      screen: "example.Types.LightBox",
-      passProps: {
-        title: 'LightBox',
-        content: 'Hey there, I\'m a light box screen :D',
-        onClose: this.dismissLightBox,
-      },
-      style: {
-        backgroundBlur: 'dark',
-        backgroundColor: 'rgba(0, 0, 0, 0.7)',
-        tapBackgroundToDismiss: true
-      }
-    });
-  };
 
   onMarkerPress (marker) {
     var answer = realm.objects('Answer').filtered('dateCreated = $0', marker.dateCreated)[0]

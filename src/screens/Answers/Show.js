@@ -39,10 +39,12 @@ class ShowAnswer extends Component {
   render () {
     var color = this.state.text ? '#4A4A4A' : '#9B9B9B'
     var answer = this.props.answer
+    var dateWithFormatting = Utils.formatDateToNiceString(answer.dateCreated).toUpperCase()
     return (
       <ScrollView style={[styles.innerContainer]}>
+        <Text style={[GlobalStyles.buttonStyleText, styles.date]}>{dateWithFormatting}</Text>
         <Text style={[GlobalStyles.p, GlobalStyles.card_question, styles.card_question]}>{answer.question}</Text>
-        <Text style={[GlobalStyles.p, GlobalStyles.card_answer, {color: color}]}>{this.state.text ? this.state.text : 'No answer for this question.'}</Text>
+        <Text style={[GlobalStyles.p, GlobalStyles.card_answer, {color: color}]}>{answer.text ? answer.text : 'No answer for this question.'}</Text>
         {Utils.isBlank(answer.location) ? null : 
           <Text style={[GlobalStyles.card_location_text, GlobalStyles.buttonStyleText]}>📍 {this.state.location.name.toUpperCase()}</Text>
         }
@@ -77,6 +79,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     borderRadius: 5,
     padding: 24,
+  },
+  date: {
+    // fontSize: 20,
+    marginBottom: 15
   },
   card_close_container: {
     alignSelf: 'flex-end',

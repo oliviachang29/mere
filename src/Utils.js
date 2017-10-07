@@ -53,14 +53,15 @@ let Utils = {
   	return ['January', 'February', 'March', 'April', 'May', 'June',
   	 'July', 'August', 'September', 'October', 'November', 'December']
   },
-  monthNamesShort () {
-    return ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May', 'Jun.', 'Jul.', 'Aug.', 'Sept.', 'Oct.', 'Nov.', 'Dec.']
-  },
   isBlank (text) {
     return !text.replace(/\s/g, '') ? true : false
   },
   capitalizeAndSpace(text) {
     return text.split('').join(' ').toUpperCase()
+  },
+  formatDateToNiceString(date) {
+    var monthNamesShort = ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May', 'Jun.', 'Jul.', 'Aug.', 'Sept.', 'Oct.', 'Nov.', 'Dec.']
+    return monthNamesShort[date.getMonth()] + ' ' + date.getDate() + ', ' + date.getFullYear()
   }
 }
 

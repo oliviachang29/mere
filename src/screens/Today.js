@@ -7,7 +7,6 @@ import {
   Keyboard, 
   TouchableWithoutFeedback, 
   TouchableOpacity, 
-  Image,
   ScrollView
 } from 'react-native'
 import GlobalStyles from '../GlobalStyles'
@@ -16,10 +15,10 @@ import realm from '../realm'
 import LinearGradient from 'react-native-linear-gradient'
 import Button from '../components/Shared/Button'
 import Answer from '../components/Shared/Answer'
-import uuid from 'uuid'
-var ImagePicker = require('react-native-image-picker')
-// var RNFS = require('react-native-fs')
+import PhotoUpload from '../components/Shared/PhotoUpload'
 
+// var RNFS = require('react-native-fs')
+var gradientColors = Utils.gradientColors()
 
 var emojis = Utils.emojis()
 var colors = Utils.colors()
@@ -82,7 +81,7 @@ export default class Today extends Component {
     })
 
     this.changeRating = this.changeRating.bind(this)
-    this.selectPhotoTapped = this.selectPhotoTapped.bind(this)
+    
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
   }
 
@@ -116,13 +115,17 @@ export default class Today extends Component {
   }
 
   renderAnswers() {
-    // TODO: replace tap to answer with actual text
     return this.state.entry.answers.map((answer, i) => {
       var text = answer.text != '' ? answer.text : 'Tap to answer...'
       var location = answer.location === '' ? '' : JSON.parse(answer.location)
       return (
-        <Answer answer={answer} text={text} location={location} />
-
+        <Answer
+          key={i} 
+          i={i}
+          location={location} 
+          answer={answer} 
+          onPress={() => this.gotoEditAnswer(answer, gradientColors[i].first, gradientColors[i].second)}
+          text={text} />
       )
     })
   }
@@ -154,16 +157,6 @@ export default class Today extends Component {
     })
   }
 
-  renderPhoto() {
-    if (this.state.imageSource != '') {
-      return (
-        <View style={[GlobalStyles.photo_container, {marginBottom: 20}]}>
-          <Image style={GlobalStyles.photo} source={this.state.imageSource} />
-        </View>
-      )
-    }
-  }
-
   render () {
     const photoButtonText = this.state.imageSource === '' ? '🌄  ADD PHOTO' : '🌃  CHANGE PHOTO'
     return (
@@ -172,20 +165,12 @@ export default class Today extends Component {
           <Text style={[GlobalStyles.h1, styles.goodTimeOfDay_good]}>good</Text>
           <Text style={[GlobalStyles.h1, styles.goodTimeOfDay_time, {color: this.state.entry.color}]}>{Utils.getTimeOfDay(this.state.dateWithoutTime)}.</Text>
         </View>
-        {/*{this.renderImage()}*/}
         <View style={[GlobalStyles.separator, styles.separator]} />
         <Text style={[GlobalStyles.h4, styles.howWasYourDay]}>How was your day?</Text>
         <View style={GlobalStyles.emoji_container}>
           {this.renderEmojiScale()}
         </View>
-        {/*<ActivityIndicator animating={this.state.showActivityIndicator}/>*/}
-        {this.renderPhoto()}
-        <View style={styles.photo_buttonContainer}>
-          <Button 
-            onPress={() => this.selectPhotoTapped()}
-            text={photoButtonText}
-            viewStyle={styles.photo_button} />
-        </View>
+        <PhotoUpload entry={this.state.entry} imageSource={this.state.imageSource} />
         {this.renderAnswers()}
       </ScrollView>
     )
@@ -234,48 +219,11 @@ export default class Today extends Component {
     })
   }
 
-  
-  selectPhotoTapped() {
-    const options = {
-      storageOptions: {
-        skipBackup: true,
-        path: 'images'
-      }
-    };
-
-    ImagePicker.showImagePicker(options, (response) => {
-      console.log('Response = ', response);
-
-      if (response.didCancel) {
-        console.log('User cancelled photo picker');
-      }
-      else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
-      }
-      else if (response.customButton) {
-        console.log('User tapped custom button: ', response.customButton);
-      }
-      else {
-        let source = { uri: response.uri };
-
-        // You can also display the image using data:
-        // let source = { uri: 'data:image/jpeg;base64,' + response.data };
-
-        this.setState({
-          imageSource: source
-        });
-        realm.write(() => {
-          this.state.entry.imageSource = JSON.stringify(source)
-        })
-      }
-    });
-  }
-
 }
 
 const styles = StyleSheet.create({
   innerContainer: {
-    paddingTop: 10
+    paddingTop: 10,
   },
   goodTimeOfDay_container: {
     marginLeft: 18
@@ -309,15 +257,6 @@ const styles = StyleSheet.create({
   card_addPicturesButton: {
     marginTop: 30
   },
-  photo_button: {
-    alignSelf: 'center',
-    marginTop: 15,
-    marginBottom: 30
-  },
-  photo_buttonContainer: {
-    // alignSelf: 'center',
-    // marginTop: 30
-  }
 })
 
 module.exports = Today
