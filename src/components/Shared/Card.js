@@ -8,7 +8,6 @@ var emojis = Utils.emojis()
 
 class Card extends Component {
   renderPhoto(imageSource) {
-    console.log(imageSource)
     if (imageSource != '') {
       return (
         <View style={[GlobalStyles.photo_container, {marginBottom: 20}]}>

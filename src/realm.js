@@ -26,10 +26,11 @@ Answer.schema = {
     text: {type: 'string', default: ''},
     height: {type: 'int', default: 40},
     location: {type: 'string', default: ''},
+    random: {type: 'string', default: false}
   }
 }
 
 export default new Realm({
   schema: [Entry, Answer],
-  schemaVersion: 22
+  schemaVersion: 23
 })

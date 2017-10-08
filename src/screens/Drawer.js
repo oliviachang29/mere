@@ -13,6 +13,13 @@ class Button extends Component {
 }
 
 class Drawer extends Component {
+  constructor(props) {
+    super(props)
+    console.log('props... \n' + JSON.stringify(this.props))
+    this.state = {
+      currentScreen: this.props.currentScreen
+    }
+  }
   gotoToday = () => {
     this.toggleDrawer()
      this.props.navigator.handleDeepLink({
@@ -39,15 +46,16 @@ class Drawer extends Component {
       side: 'left'
     });
   };
+
   render() {
     return (
       <View style={styles.container}>
-        <Text>{this.props.currentScreen}</Text>
         <Button onPress={this.gotoToday} text='today' />
         <Button onPress={this.gotoCalendar} text='calendar' />
         <Button onPress={this.gotoMap} text='map' />
         <Button text='profile' />
         <Button text='settings' />
+        <Text>currentScreen: {this.state.currentScreen}</Text>
 
         <View style={styles.copyright_container}>
           <Text style={[GlobalStyles.p, styles.copyright]}>(c) Olivia Chang 2017</Text>
@@ -84,4 +92,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Drawer;
+module.exports = Drawer;

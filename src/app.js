@@ -9,10 +9,12 @@ Navigation.startSingleScreenApp({
     screen: 'app.Today',
     title: 'T O D A Y',
   },
+  passProps: {
+    currentScreen: 'today'
+  },
   drawer: {
     left: {
       screen: 'app.Drawer',
-      passProps: {}
     },
     style: {
       drawerShadow: false,

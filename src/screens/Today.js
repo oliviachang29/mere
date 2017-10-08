@@ -47,8 +47,8 @@ export default class Today extends Component {
 
     var date = new Date()
     realm.write(() => {
-      // realm.delete(realm.objects('Entry'))
-      // realm.delete(realm.objects('Answer'))
+      realm.delete(realm.objects('Entry'))
+      realm.delete(realm.objects('Answer'))
       // const fakeEntry = realm.create('Entry', {id: 1, dateCreated: new Date(date.getFullYear(), 8, 3), answers: [], color: colors[Utils.randomNum(21, 0)]})
       // fakeEntry.answers.push({question: 'What was the best part?'})
       // fakeEntry.answers.push({question: 'What was the worst part?'})
@@ -69,7 +69,9 @@ export default class Today extends Component {
           color: colors[Utils.randomNum(21, 0)]
         })
       })
+      console.log('hi')
       Utils.createAnswers(entry)
+      console.log('hi 2')
     }
     var imageSource = entry.imageSource === '' ? '' : JSON.parse(entry.imageSource)
     this.state = {
@@ -85,7 +87,7 @@ export default class Today extends Component {
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
   }
 
-   componentWillMount() {
+  componentWillMount() {
     this.getEntryForToday()
   }
 
@@ -147,11 +149,11 @@ export default class Today extends Component {
         )
       } else {
         return (
-          <TouchableWithoutFeedback onPress={() => this.changeRating(i)} key={i}>
+          <TouchableOpacity onPress={() => this.changeRating(i)} key={i}>
             <View>
               <Text style={GlobalStyles.emoji}> {emoji} </Text>
             </View>
-          </TouchableWithoutFeedback>
+          </TouchableOpacity>
         )
       }
     })
@@ -181,7 +183,6 @@ export default class Today extends Component {
       if (event.id == 'drawer') {
         this.props.navigator.toggleDrawer({
           side: 'left',
-          passPropsLeft: {currentScreen: 'Today'}
         });
       }
     } else if (event.type == 'DeepLink') {
@@ -192,6 +193,11 @@ export default class Today extends Component {
           screen: 'app.Calendar',
           title: 'C A L E N D A R',
           animationType: 'fade',
+          passProps: {
+            drawerLeft: {
+              currentScreen: 'calendar'
+            }
+          }
         });
       }
       if (event.link === 'Map') {
