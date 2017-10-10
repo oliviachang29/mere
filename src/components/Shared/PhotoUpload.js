@@ -70,7 +70,7 @@ class PhotoUpload extends Component {
           imageSource: source
         });
         realm.write(() => {
-          this.props.entry.imageSource = JSON.stringify(source)
+          this.props.answer.imageSource = JSON.stringify(source)
         })
       }
     });

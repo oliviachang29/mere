@@ -15,7 +15,6 @@ import realm from '../realm'
 import LinearGradient from 'react-native-linear-gradient'
 import Button from '../components/Shared/Button'
 import Answer from '../components/Shared/Answer'
-import PhotoUpload from '../components/Shared/PhotoUpload'
 
 // var RNFS = require('react-native-fs')
 var gradientColors = Utils.gradientColors()
@@ -69,13 +68,14 @@ export default class Today extends Component {
           color: colors[Utils.randomNum(21, 0)]
         })
       })
-      console.log('hi')
+      // console.log('hi')
       Utils.createAnswers(entry)
-      console.log('hi 2')
+      // console.log('hi 2')
     }
     var imageSource = entry.imageSource === '' ? '' : JSON.parse(entry.imageSource)
     this.state = {
-      imageSource: imageSource
+      imageSource: imageSource,
+      date: Utils.formatDateToNiceString(dateWithoutTime).toUpperCase()
     }
 
     realm.addListener('change', () => {
@@ -160,19 +160,19 @@ export default class Today extends Component {
   }
 
   render () {
-    const photoButtonText = this.state.imageSource === '' ? '🌄  ADD PHOTO' : '🌃  CHANGE PHOTO'
     return (
       <ScrollView style={styles.innerContainer} showsVerticalScrollIndicator={false}>
+        
         <View style={styles.goodTimeOfDay_container}>
           <Text style={[GlobalStyles.h1, styles.goodTimeOfDay_good]}>good</Text>
           <Text style={[GlobalStyles.h1, styles.goodTimeOfDay_time, {color: this.state.entry.color}]}>{Utils.getTimeOfDay(this.state.dateWithoutTime)}.</Text>
         </View>
+        <Text style={[GlobalStyles.buttonStyleText, styles.date]}>TODAY IS {this.state.date}.</Text>
         <View style={[GlobalStyles.separator, styles.separator]} />
         <Text style={[GlobalStyles.h4, styles.howWasYourDay]}>How was your day?</Text>
         <View style={GlobalStyles.emoji_container}>
           {this.renderEmojiScale()}
         </View>
-        <PhotoUpload entry={this.state.entry} imageSource={this.state.imageSource} />
         {this.renderAnswers()}
       </ScrollView>
     )
@@ -230,6 +230,14 @@ export default class Today extends Component {
 const styles = StyleSheet.create({
   innerContainer: {
     paddingTop: 10,
+  },
+  date: {
+    marginLeft: 26,
+    marginTop: 10,
+    fontSize: 15,
+    // fontFamily: 'BrandonGrotesque-Medium',
+    // letterSpacing: 1.2
+    // marginBottom: 30
   },
   goodTimeOfDay_container: {
     marginLeft: 18

@@ -5,7 +5,6 @@ import Utils from '../../Utils'
 import realm from '../../realm'
 import Answer from '../../components/Shared/Answer'
 import LinearGradient from 'react-native-linear-gradient'
-import PhotoUpload from '../../components/Shared/PhotoUpload'
 var gradientColors = Utils.gradientColors()
 var monthNames = Utils.monthNames()
 var emojis = Utils.emojis()
@@ -34,7 +33,6 @@ export default class EditEntry extends Component {
       entry: entry,
       answers: Utils.pushAnswersToArray(entry),
       rating: entry.rating,
-      imageSource: entry.imageSource === '' ? '' : JSON.parse(entry.imageSource)
     }
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
   }
@@ -109,7 +107,6 @@ export default class EditEntry extends Component {
         <View style={GlobalStyles.emoji_container}>
           {this.renderEmojiScale()}
         </View>
-        <PhotoUpload entry={this.state.entry} imageSource={this.state.imageSource} />
         {this.renderAnswers()}
         {/* {this.renderAnswers()} */}
       </ScrollView>

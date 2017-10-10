@@ -24,7 +24,8 @@ var questions = [
 "What made you stressed today?",
 "What are you grateful today?",
 "What new thing did I learn today?",
-"How did I push myself today?"
+"How did I push myself today?",
+"How did you relax today?"
 ]
 
 let Utils = {
@@ -48,49 +49,48 @@ let Utils = {
   // because the answers are actively edited by user, and if it were this.state.entry.answers
   // every time the user edited a textinput, it would need a realm.write
   createAnswers(entry) {
-    console.log('createAnswers called')
-    // var questionNumber
+    function setStoreQuestionNumber(number) {
+      store
+        .update('user', {
+          questionNumber: number
+        })
+        .catch(error => {
+          console.log('error: \n\n' + error)
+        })
+    }
+    var questionNumber = 0
     // get the stored question number
-    // store.get('user')
-    //   .then(result => {
-    //     questionNumber = result.questionNumber
-    //   })
-    //   .catch(error => {
-    //     console.log(error)
-    //     store
-    //       .update('user', {
-    //         questionNumber: 0
-    //       })
-    //     questionNumber = result.questionNumber
-    //   })
+    store.get('user')
+      .then(result => {
+        if (Number.isInteger(result.questionNumber)) {
+          questionNumber = result['questionNumber']
+        } else {
+          setStoreQuestionNumber(0)
+        }
+      })
+      .catch(error => {
+        console.log('error: \n\n' + error)
+        setStoreQuestionNumber(0)
+      })
+      .then(() => {
+        realm.write(() => {
+          // Create three entries
+          entry.answers.push({question: 'What was the best part?', dateCreated: new Date()})
+          entry.answers.push({question: 'What was the funniest part?', dateCreated: new Date()})
+          entry.answers.push({question: questions[questionNumber], dateCreated: new Date(), random: true})
+        })
+        if (questionNumber === 22) {
+          setStoreQuestionNumber(0)
+          console.log('set questionNumber to 0')
+        } else {
+          var plusOne = questionNumber + 1
+          setStoreQuestionNumber(plusOne)
+          console.log('set questionNumber to ' + plusOne)
+        }
+      })
     // var max = 22
     // var min = 0
     // var randomNum = Math.floor(Math.random() * (max - min + 1)) + min;
-    realm.write(() => {
-      entry.answers.push({question: 'What was the best part?', entryId: entry.id, dateCreated: new Date()})
-      entry.answers.push({question: 'What was the funniest part?', entryId: entry.id, dateCreated: new Date()})
-      // entry.answers.push({question: questions[randomNum], entryId: entry.id, dateCreated: new Date(), random: true})
-    })
-    // console.log('createAnswers finished')
-
-    // if (questionNumber === 22) {
-    //   store
-    //     .update('user', {
-    //       questionNumber: 0
-    //     })
-    //     .catch(error => {
-    //       console.log(error)
-    //     })
-    // } else {
-    //   store
-    //     .update('user', {
-    //       questionNumber: questionNumber + 1
-    //     })
-    //     .catch(error => {
-    //       console.log(error)
-    //     })
-    // }
-
   },
   pushAnswersToArray(entry) {
     var answers = []

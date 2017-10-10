@@ -6,7 +6,8 @@ import Button from '../../components/Shared/Button'
 import GlobalStyles from '../../GlobalStyles'
 import realm from '../../realm'
 import Utils from '../../Utils'
-import RNGooglePlaces from 'react-native-google-places';
+import RNGooglePlaces from 'react-native-google-places'
+import PhotoUpload from '../../components/Shared/PhotoUpload'
 
 class EditAnswer extends Component {
 
@@ -28,11 +29,14 @@ class EditAnswer extends Component {
 
   constructor(props) {
     super(props)
-    var location = this.props.answer.location === '' ? '' : JSON.parse(this.props.answer.location)
+    var answer = this.props.answer
+    var location = answer.location === '' ? '' : JSON.parse(answer.location)
+    var imageSource = answer.imageSource === '' ? '' : JSON.parse(answer.imageSource)
     this.state = {
-      text: this.props.answer.text,
-      height: this.props.answer.height,
+      text: answer.text,
+      height: answer.height,
       location: location,
+      imageSource: imageSource
     }
     this.openSearchModal = this.openSearchModal.bind(this)
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
@@ -88,6 +92,7 @@ class EditAnswer extends Component {
             style={GlobalStyles.linearGradient} 
             start={{x: 0.0, y: 0.0}} end={{x: 0.5, y: 1.0}}
             />
+          <PhotoUpload answer={this.props.answer} imageSource={this.state.imageSource} />
           {this.renderLocation()}
           <Button 
             onPress={() => console.log('location button pressed')}
