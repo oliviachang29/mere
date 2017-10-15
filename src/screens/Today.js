@@ -15,7 +15,6 @@ import realm from '../realm'
 import LinearGradient from 'react-native-linear-gradient'
 import Button from '../components/Shared/Button'
 import Answer from '../components/Shared/Answer'
-
 // var RNFS = require('react-native-fs')
 var gradientColors = Utils.gradientColors()
 
@@ -23,96 +22,70 @@ var emojis = Utils.emojis()
 var colors = Utils.colors()
 
 export default class Today extends Component {
-  static navigatorStyle = {
-    navBarTextFontFamily: 'BrandonGrotesque-Medium',
-    navBarTextFontSize: 20,
-    // navBarButtonColor: '#D8D8D8',
-  }
-  
-  static navigatorButtons = {
-    leftButtons: [
-      {
-        icon: require('../assets/images/drawer-icon.png'),
-        id: 'drawer',
-        disableIconTint: true,
-      }
-    ]
-  }
+  static navigatorStyle = Utils.navigatorStyle()
+  static navigatorButtons = Utils.navigatorButtons()
 
   constructor(props) {
     super(props)
+    // console.log(realm.path)
+    console.disableYellowBox = true
 
-    console.log(realm.path)
-
-    var date = new Date()
     realm.write(() => {
       realm.delete(realm.objects('Entry'))
       realm.delete(realm.objects('Answer'))
-      // const fakeEntry = realm.create('Entry', {id: 1, dateCreated: new Date(date.getFullYear(), 8, 3), answers: [], color: colors[Utils.randomNum(21, 0)]})
-      // fakeEntry.answers.push({question: 'What was the best part?'})
-      // fakeEntry.answers.push({question: 'What was the worst part?'})
-      // fakeEntry.answers.push({question: 'What was the funniest part?'})
     })
-    // get today's entry
+
+    var date = new Date()
     var dateWithoutTime = new Date(date.getFullYear(), date.getMonth(), date.getDate())
-    // set entry
+
     var entry = realm.objects('Entry').filtered('dateCreated = $0', dateWithoutTime)[0]
     if (!entry) {
-//      console.log("Today's entry doesn't exist, creating it now...")
       // create the entry
       realm.write(() => {
         entry = realm.create('Entry', {
           id: realm.objects('Entry').length + 1,
           dateCreated: dateWithoutTime,
           answers: [],
-          color: colors[Utils.randomNum(21, 0)]
+          color: colors[Utils.randomNum(20, 0)]
         })
       })
-      // console.log('hi')
       Utils.createAnswers(entry)
-      // console.log('hi 2')
     }
-    var imageSource = entry.imageSource === '' ? '' : JSON.parse(entry.imageSource)
+    // var answers = Utils.pushAnswersToArray(entry)
+    var answers = []
+    entry.answers.map(function (answer, i) {
+      var newAnswer = {}
+      newAnswer.question = answer.question
+      newAnswer.text = answer.text
+      newAnswer.height = answer.height
+      answers.push(newAnswer)
+    })
+    console.log(answers)
+
     this.state = {
-      imageSource: imageSource,
-      date: Utils.formatDateToNiceString(dateWithoutTime).toUpperCase()
-    }
+      entry: entry,
+      answers: answers,
+      rating: entry.rating,
+      date: Utils.formatDateToNiceString(dateWithoutTime).toUpperCase(),
+      timeOfDay: Utils.getTimeOfDay(dateWithoutTime)
+    }    
 
     realm.addListener('change', () => {
-      this.getEntryForToday()
+      // this.getEntry()
     })
 
     this.changeRating = this.changeRating.bind(this)
-    
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
   }
 
   componentWillMount() {
-    this.getEntryForToday()
+    // this.getEntry()
   }
 
-
-  getEntryForToday() {
-    var date = new Date()
-    var dateWithoutTime = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+  getEntry() {
     var entry = realm.objects('Entry').filtered('dateCreated = $0', dateWithoutTime)[0]
-    if (!entry) {
-      realm.write(() => {
-        entry = realm.create('Entry', {
-          id: realm.objects('Entry').length + 1,
-          dateCreated: dateWithoutTime,
-          answers: [],
-          color: colors[Utils.randomNum(21, 0)]
-        })
-      })
-      Utils.createAnswers(entry)
-    }
     this.setState({
-      entry: entry,
-      answers: Utils.pushAnswersToArray(entry),
-      rating: entry.rating,
-      dateWithoutTime: dateWithoutTime,
-      showActivityIndicator: false
+      
     })
   }
 
@@ -129,13 +102,6 @@ export default class Today extends Component {
           onPress={() => this.gotoEditAnswer(answer, gradientColors[i].first, gradientColors[i].second)}
           text={text} />
       )
-    })
-  }
-
-  changeRating(i) {
-    this.setState({rating: i})
-    realm.write(() => {
-      this.state.entry.rating = i
     })
   }
 
@@ -162,12 +128,12 @@ export default class Today extends Component {
   render () {
     return (
       <ScrollView style={styles.innerContainer} showsVerticalScrollIndicator={false}>
-        
         <View style={styles.goodTimeOfDay_container}>
           <Text style={[GlobalStyles.h1, styles.goodTimeOfDay_good]}>good</Text>
-          <Text style={[GlobalStyles.h1, styles.goodTimeOfDay_time, {color: this.state.entry.color}]}>{Utils.getTimeOfDay(this.state.dateWithoutTime)}.</Text>
+          <Text style={[GlobalStyles.h1, styles.goodTimeOfDay_time, {color: this.state.entry.color}]}>{this.state.timeOfDay}.</Text>
+          <Text style={[GlobalStyles.buttonStyleText, styles.date]}>{this.state.date}</Text>
         </View>
-        <Text style={[GlobalStyles.buttonStyleText, styles.date]}>TODAY IS {this.state.date}.</Text>
+        
         <View style={[GlobalStyles.separator, styles.separator]} />
         <Text style={[GlobalStyles.h4, styles.howWasYourDay]}>How was your day?</Text>
         <View style={GlobalStyles.emoji_container}>
@@ -178,51 +144,38 @@ export default class Today extends Component {
     )
   }
 
+  changeRating(i) {
+    this.setState({rating: i})
+    realm.write(() => {
+      this.state.entry.rating = i
+    })
+  }
+
+  // NAVIGATOR
+
+  gotoEditAnswer(answer, color1, color2){
+    this.props.navigator.push({
+      screen: 'app.EditAnswer',
+      title: 'A N S W E R',
+      passProps: {answer, color1, color2}
+    })
+  }
+
   onNavigatorEvent(event) { // this is the onPress handler for the two buttons together
     if (event.type == 'NavBarButtonPress') { // this is the event type for button presses
       if (event.id == 'drawer') {
         this.props.navigator.toggleDrawer({
           side: 'left',
+          to: 'open'
         });
       }
     } else if (event.type == 'DeepLink') {
-//      console.log('deep link pressed')
-      if (event.link === 'Calendar') {
-        // handle the link somehow, usually run a this.props.navigator command
-        this.props.navigator.resetTo({
-          screen: 'app.Calendar',
-          title: 'C A L E N D A R',
-          animationType: 'fade',
-          passProps: {
-            drawerLeft: {
-              currentScreen: 'calendar'
-            }
-          }
-        });
-      }
-      if (event.link === 'Map') {
-        // handle the link somehow, usually run a this.props.navigator command
-        this.props.navigator.resetTo({
-          screen: 'app.Map',
-          title: 'M A P',
-          animationType: 'fade',
-        });
-      }
+      this.props.navigator.resetTo({
+        screen: 'app.' + event.link,
+        title: Utils.capitalizeAndSpace(event.link),
+        animationType: 'fade'
+      })
     }
-  }
-
-  updateSize = (height) => {
-    this.setState({
-      height
-    })
-  }
-
-  gotoEditAnswer(answer, color1, color2){
-    this.props.navigator.showModal({
-      screen: 'app.EditAnswer',
-      title: 'A N S W E R',
-      passProps: {answer, color1, color2}
-    })
   }
 
 }
@@ -232,8 +185,8 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
   date: {
-    marginLeft: 26,
-    marginTop: 10,
+    marginLeft: 6,
+    marginTop: 20,
     fontSize: 15,
     // fontFamily: 'BrandonGrotesque-Medium',
     // letterSpacing: 1.2

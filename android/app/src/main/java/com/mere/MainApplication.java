@@ -3,6 +3,7 @@ package com.mere;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.rnfs.RNFSPackage;
 import io.realm.react.RealmReactPackage;
 import com.reactnativenavigation.NavigationReactPackage;
 import com.airbnb.android.react.maps.MapsPackage;
@@ -29,6 +30,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new RNFSPackage(),
             new RealmReactPackage(),
             new NavigationReactPackage(),
             new MapsPackage(),

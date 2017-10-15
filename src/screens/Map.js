@@ -45,17 +45,12 @@ function getRegionForCoordinates(points) {
 }
 
 class Map extends React.Component {
-  static navigatorStyle = {
-    navBarTextFontFamily: 'BrandonGrotesque-Medium',
-    navBarTextFontSize: 20,
-    // navBarButtonColor: '#D8D8D8',
-  }
-  
+  static navigatorStyle = Utils.navigatorStyle()
   static navigatorButtons = {
     leftButtons: [
       {
-        icon: require('../assets/images/drawer-icon.png'),
-        id: 'drawer',
+        icon: require('../assets/images/back-arrow.png'),
+        id: 'back',
         disableIconTint: true,
       }
     ]
@@ -81,25 +76,24 @@ class Map extends React.Component {
        markers.push(newMarker)
        coordinates.push(coordinate)
     })
-
-    var region = getRegionForCoordinates(coordinates)
+    // make sure there is at least one coordinate to generate the region from
+    if (coordinates.length > 0) {
+      var region = getRegionForCoordinates(coordinates)
+    } else {
+      var region = getRegionForCoordinates([{latitude: 90, longitude: 0}, {latitude: -90, longitude: 0}])
+    }
 
     this.state = {
       region: region,
       markers: markers
-      // markers: [
-      //   {title: 'hi', description: 'yo', coordinate: {latitude: LATITUDE, longitude: LONGITUDE}}
-      // ]
     }
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
   }
 
   onNavigatorEvent(event) {
     if (event.type == 'NavBarButtonPress') {
-      if (event.id == 'drawer') {
-        this.props.navigator.toggleDrawer({
-          side: 'left',
-        });
+      if (event.id == 'back') {
+        this.props.navigator.pop()
       }
     } else if (event.type == 'DeepLink') {
       if (event.link === 'Today') {
@@ -114,7 +108,7 @@ class Map extends React.Component {
           screen: 'app.Calendar',
           title: 'C A L E N D A R',
           animationType: 'fade',
-        });
+        })
       }
     }
   }
@@ -140,10 +134,8 @@ class Map extends React.Component {
 
   onMarkerPress (marker) {
     var answer = realm.objects('Answer').filtered('dateCreated = $0', marker.dateCreated)[0]
-    // TODO: show as lightbox
     this.props.navigator.showLightBox({
       screen: 'app.ShowAnswer',
-      // title: Utils.capitalizeAndSpace(marker.title),
       passProps: {
         answer
       },

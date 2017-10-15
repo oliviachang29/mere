@@ -25,30 +25,16 @@ function convertDateToString (date) {
 }
 
 export default class Calendar extends Component {
-  static navigatorStyle = {
-    navBarTextFontFamily: 'BrandonGrotesque-Medium',
-    navBarTextFontSize: 20
-  }
-  
+  static navigatorStyle = Utils.navigatorStyle()
+  static navigatorButtons = Utils.navigatorButtons()
+
   constructor (props) {
     super(props)
 
-    this.props.navigator.setButtons({
-      leftButtons: [
-        {
-          icon: require('../../assets/images/drawer-icon.png'),
-          id: 'drawer',
-          disableIconTint: true,
-        }
-      ]
-    })
     // example of items: {'2017-09-02': [{date: new Date(2017, 8, 2)}]}
-    // console.log('items:')
-    // console.log(items)
-
     LocaleConfig.locales['en'] = {
-      monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-      monthNamesShort: ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May', 'Jun.', 'Jul.', 'Aug.', 'Sept.', 'Oct.', 'Nov.', 'Dec.'],
+      monthNames: Utils.monthNames(),
+      monthNamesShort: Utils.monthNamesShort(),
       dayNames: ['Su','M','T','W','Th','F','S'],
       dayNamesShort: ['Su','M','T','W','Th','F','S']
     };
@@ -75,26 +61,29 @@ export default class Calendar extends Component {
     // TODO: fix
     // get random quotes
     // 50 quotes (5 x 10 per request)
-    /*
-    for (var i = 0; i < 5; i++) {
-      var cat = (i % 2 === 0) ? 'movies' : 'famous'
-      fetch('https://andruxnet-random-famous-quotes.p.mashape.com/', {
-          method: 'POST',
-          headers: {
-            'Accept': 'application/json',
-            'X-Mashape-Key': 'mkta6gCOL8mshsMKm9KKgAvXYGWCp1q7WGgjsn5DMAVNLUHYnc',
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'count': '10',
-            'cat': cat
-          }
-        })
-        .then((response) => {response.json()})
-        .then((responseJson) => {
-          this.setState({quotes: this.state.quotes.concat(responseJson)})
-        })
-        .catch((error) => console.log(error))
+    
+    // for (var i = 0; i < 5; i++) {
+    //   var cat = (i % 2 === 0) ? 'movies' : 'famous'
+    //   fetch('https://andruxnet-random-famous-quotes.p.mashape.com/?', {
+    //       method: 'GET',
+    //       headers: {
+    //         'Accept': 'application/json',
+    //         'X-Mashape-Key': 'mkta6gCOL8mshsMKm9KKgAvXYGWCp1q7WGgjsn5DMAVNLUHYnc',
+    //         'count': '10',
+    //         'cat': cat
+    //       }
+    //     })
+    //     .then((response) => {
+    //       response.json()
+    //       console.log(response)
+    //     })
+    //     .then((responseJson) => {
+    //       this.setState({quotes: this.state.quotes.concat(responseJson)})
+    //     })
+    //     .catch((error) => console.log(error))
         
-    }*/
+    // }
+
   }
 
   loadToday() {
@@ -123,26 +112,17 @@ export default class Calendar extends Component {
     if (event.type == 'NavBarButtonPress') {
       if (event.id == 'drawer') {
         this.props.navigator.toggleDrawer({
-          side: 'left'
+          side: 'left',
+          to: 'open'
         })
       }
     } else if (event.type == 'DeepLink') {
       console.log('deep link pressed')
-      if (event.link === 'Today') {
-        this.props.navigator.resetTo({
-          screen: 'app.Today',
-          title: 'T O D A Y',
-          animationType: 'fade'
-        })
-      }
-      if (event.link === 'Map') {
-        // handle the link somehow, usually run a this.props.navigator command
-        this.props.navigator.resetTo({
-          screen: 'app.Map',
-          title: 'M A P',
-          animationType: 'fade',
-        });
-      }
+      this.props.navigator.resetTo({
+        screen: 'app.' + event.link,
+        title: Utils.capitalizeAndSpace(event.link),
+        animationType: 'fade'
+      })
     }
   }
 

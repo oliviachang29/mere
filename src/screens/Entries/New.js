@@ -5,27 +5,20 @@ import Utils from '../../Utils'
 import realm from '../../realm'
 import LinearGradient from 'react-native-linear-gradient'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import Answer from '../../components/Shared/Answer'
 var gradientColors = Utils.gradientColors()
 var monthNames = Utils.monthNames()
 var emojis = Utils.emojis()
 var colors = Utils.colors()
 
 export default class NewEntry extends Component {
+  static navigatorStyle = Utils.navigatorStyle()
   static navigatorButtons = {
     leftButtons: [
       {
         icon: require('../../assets/images/back-arrow.png'),
         id: 'back',
         disableIconTint: true,
-      }
-    ],
-    rightButtons: [
-      {
-        title: 'Save',
-        id: 'save',
-        buttonColor: '#9B9B9B',
-        buttonFontFamily: 'FreightDispBold',
-        buttonFontSize: 20,
       }
     ]
   }
@@ -40,61 +33,40 @@ export default class NewEntry extends Component {
         id: realm.objects('Entry').length + 1,
         dateCreated: date,
         answers: [],
-        color: colors[Utils.randomNum(21, 0)]
+        color: colors[Utils.randomNum(20, 0)]
       })
     })
     Utils.createAnswers(entry)
-    console.log(entry)
 
     this.state = {
       entry: entry,
       answers: Utils.pushAnswersToArray(entry),
-      rating: entry.rating
+      rating: entry.rating,
     }
     this.changeRating = this.changeRating.bind(this)
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
   }
 
-  onNavigatorEvent(event) {
-    
-    if (event.type == 'NavBarButtonPress') { // this is the event type for button presses
-      if (event.id == 'save') {
-        this.saveEntry()
-      }
-      if (event.id == 'back') {
-        this.props.navigator.pop()
-        console.log(this.state.entry)
-      }
-    }
+  componentWillMount() {
+    this.getEntry()
+  }
+
+  getEntry() {
+   this.setState({})
   }
 
   renderAnswers() {
     return this.state.entry.answers.map((answer, i) => {
-      var state = this.state;
+      var text = answer.text != '' ? answer.text : 'Tap to answer...'
+      var location = answer.location === '' ? '' : JSON.parse(answer.location)
       return (
-        <View style={[GlobalStyles.shadow, GlobalStyles.card_container]} key={i}>
-          <Text style={[GlobalStyles.h4, GlobalStyles.card_textInput_prompt]}>{answer.question}</Text>
-          <View style={GlobalStyles.card_textInput_container}>
-            <TextInput
-              autoCorrect
-              spellCheck
-              placeholder="Tap to answer..."
-              defaultValue={state.answers[i].text}
-              onChangeText={ (text) => {state.answers[i].text = text} }
-              onEndEditing={() => this.setState(state)}
-              style={[GlobalStyles.p, GlobalStyles.card_textInput, {height: state.answers[i].height}]}
-              editable={true}
-              multiline={true}
-              onContentSizeChange={(e) => {state.answers[i].height = e.nativeEvent.contentSize.height + 10; this.setState(state)}}
-            />
-          </View>
-          <View style={GlobalStyles.card_textInput_underline} />
-          <LinearGradient 
-            colors={[gradientColors[i].first, gradientColors[i].second]} 
-            style={GlobalStyles.linearGradient} 
-            start={{x: 0.0, y: 0.0}} end={{x: 0.5, y: 1.0}}
-            />
-        </View>
+        <Answer
+          key={i} 
+          i={i}
+          location={location} 
+          answer={answer} 
+          onPress={() => this.gotoEditAnswer(answer, gradientColors[i].first, gradientColors[i].second)}
+          text={text} />
       )
     })
   }
@@ -128,42 +100,33 @@ export default class NewEntry extends Component {
     var entry = this.state.entry
     var date = monthNames[entry.dateCreated.getMonth()] + ' ' + entry.dateCreated.getDate()
     return (
-      <KeyboardAwareScrollView style={[styles.innerContainer]} extraHeight={140}>
+      <ScrollView style={styles.innerContainer} showsVerticalScrollIndicator={false}>
         <Text style={[GlobalStyles.h4, styles.date]}>{date}</Text>
         <View style={[GlobalStyles.separator, styles.separator]} />
         <View style={GlobalStyles.emoji_container}>
           {this.renderEmojiScale()}
         </View>
         {this.renderAnswers()}
-        {/* {this.renderAnswers()} */}
-      </KeyboardAwareScrollView>
+      </ScrollView>
     )
   }
 
-  updateSize = (height) => {
-    this.setState({
-      height
+  gotoEditAnswer(answer, color1, color2){
+    this.props.navigator.push({
+      screen: 'app.EditAnswer',
+      title: 'A N S W E R',
+      passProps: {answer, color1, color2}
     })
   }
 
-  saveEntry() {
-//    console.log('saveEntry() called')
-    Keyboard.dismiss()
-    realm.write(() => {
-      this.state.entry.answers = this.state.answers
-      this.state.entry.rating = this.state.rating
-    })
-    console.log(this.state.entry)
-
-    this.props.navigator.showInAppNotification({
-      screen: 'app.Notification',
-      passProps: {
-        title: '✓ All changes saved.',
-        type: 'success'
-      },
-      autoDismissTimerSec: 2
-    })
+  onNavigatorEvent(event) {
+    if (event.type == 'NavBarButtonPress') { // this is the event type for button presses
+      if (event.id == 'back') {
+        this.props.navigator.pop()
+      }
+    }
   }
+
 
 }
 

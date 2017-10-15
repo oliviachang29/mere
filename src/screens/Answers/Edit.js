@@ -8,20 +8,29 @@ import realm from '../../realm'
 import Utils from '../../Utils'
 import RNGooglePlaces from 'react-native-google-places'
 import PhotoUpload from '../../components/Shared/PhotoUpload'
+import Photo from '../../components/Shared/Photo'
+
+class XButton extends Component {
+  render () {
+    return (
+      <TouchableOpacity 
+        style={GlobalStyles.pullRight}
+        onPress={this.props.onPress}>
+        <Image source={require('../../assets/images/x.png')} style={styles.x} />
+      </TouchableOpacity>
+    )
+  }
+}
 
 class EditAnswer extends Component {
 
-  static navigatorStyle = {
-    navBarTextFontFamily: 'BrandonGrotesque-Medium',
-    navBarTextFontSize: 20,
-    // navBarButtonColor: '#D8D8D8',
-  }
+ static navigatorStyle = Utils.navigatorStyle()
 
   static navigatorButtons = {
-    rightButtons: [
+    leftButtons: [
       {
-        icon: require('../../assets/images/x.png'),
-        id: 'x',
+        icon: require('../../assets/images/back-arrow.png'),
+        id: 'back',
         disableIconTint: true,
       }
     ]
@@ -31,12 +40,11 @@ class EditAnswer extends Component {
     super(props)
     var answer = this.props.answer
     var location = answer.location === '' ? '' : JSON.parse(answer.location)
-    var imageSource = answer.imageSource === '' ? '' : JSON.parse(answer.imageSource)
     this.state = {
       text: answer.text,
       height: answer.height,
       location: location,
-      imageSource: imageSource
+      imageSource: answer.imageSource
     }
     this.openSearchModal = this.openSearchModal.bind(this)
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
@@ -57,15 +65,40 @@ class EditAnswer extends Component {
   renderLocation() {
     var buttonText = '📍 ' + (this.state.location === '' ? 'add location' : this.state.location.name).toUpperCase()
     return (
-      <Button 
-        onPress={() => this.openSearchModal()}
-        onLongPress={() => this.openSearchModal()}
-        text={buttonText}
-        viewStyle={styles.card_locationButton} />
+      <View style={GlobalStyles.pullRight_container}>
+        <Button 
+          onPress={() => this.openSearchModal()}
+          text={buttonText}
+          viewStyle={[styles.card_locationButton]} />
+        {this.state.location === '' ? null : 
+          <XButton onPress={() => this.setState({location: ''})} />
+        }
+      </View>
+    )
+  }
+
+  renderPhoto() {
+    // if imageSource is a string, then don't stringify
+    // if not a string (then an object), stringify
+    var imageSourceForPhoto = (typeof(this.state.imageSource) === 'string') ? this.state.imageSource : JSON.stringify(this.state.imageSource)
+    return (
+      <View>
+        <View style={GlobalStyles.pullRight_container}>
+          <PhotoUpload 
+            answer={this.props.answer} 
+            imageSource={this.state.imageSource}
+            onUpload={(imageSource) => {this.setState({imageSource: imageSource})}} />
+          {this.state.imageSource === '' ? null : 
+            <XButton onPress={() => this.setState({imageSource: ''})} />
+          }
+        </View>
+        <Photo imageSource={imageSourceForPhoto} photoStyle={{marginTop: 30}}/>
+      </View>
     )
   }
 
   render () {
+    // had to do some trickery with state so that the state wasn't delayed too much
     var state = this.state
     return (
       <KeyboardAwareScrollView style={styles.innerContainer} extraHeight={140}>
@@ -92,12 +125,8 @@ class EditAnswer extends Component {
             style={GlobalStyles.linearGradient} 
             start={{x: 0.0, y: 0.0}} end={{x: 0.5, y: 1.0}}
             />
-          <PhotoUpload answer={this.props.answer} imageSource={this.state.imageSource} />
           {this.renderLocation()}
-          <Button 
-            onPress={() => console.log('location button pressed')}
-            text='👥  TAG PEOPLE'
-            viewStyle={styles.card_peopleButton} />
+          {this.renderPhoto()}
         </View>
       </KeyboardAwareScrollView>
     )
@@ -114,6 +143,9 @@ class EditAnswer extends Component {
         // close modal
         this.props.navigator.dismissAllModals()
       }
+      if (event.id == 'back') {
+        this.props.navigator.pop()
+      }
     }
   }
 
@@ -125,12 +157,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between'
   },
   x: {
-    justifyContent: 'flex-end'
+    width: 15
   },
   card_locationButton: {
+    // flex: 1,
     marginTop: 30
   },
-  card_peopleButton: {
+  card_button: {
     marginTop: 15
   },
 })

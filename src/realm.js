@@ -11,7 +11,7 @@ Entry.schema = {
     dateCreated: 'date',
     answers: {type: 'list', objectType: 'Answer'}, // creates a to-many relationship between entry and answers
     rating: {type: 'int', default: 3},
-    color: 'string',
+    color: 'string'
   }
 }
 
@@ -25,11 +25,11 @@ Answer.schema = {
     height: {type: 'int', default: 40},
     location: {type: 'string', default: ''},
     random: {type: 'bool', default: false},
-    imageSource: {type: 'string', default: ''},
+    imageSource: {type: 'string', default: ''}
   }
 }
 
 export default new Realm({
   schema: [Entry, Answer],
-  schemaVersion: 26
+  schemaVersion: 27
 })

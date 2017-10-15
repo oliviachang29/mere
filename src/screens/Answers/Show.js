@@ -2,19 +2,14 @@ import React, { Component } from 'react'
 import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Dimensions } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
 import Button from '../../components/Shared/Button'
+import Photo from '../../components/Shared/Photo'
 import GlobalStyles from '../../GlobalStyles'
 import realm from '../../realm'
 import Utils from '../../Utils'
-
 var gradientColors = Utils.gradientColors()
+
 class ShowAnswer extends Component {
-
-  static navigatorStyle = {
-    navBarTextFontFamily: 'BrandonGrotesque-Medium',
-    navBarTextFontSize: 20,
-    // navBarButtonColor: '#D8D8D8',
-  }
-
+  static navigatorStyle = Utils.navigatorStyle()
   static navigatorButtons = {
     leftButtons: [
       {
@@ -45,9 +40,12 @@ class ShowAnswer extends Component {
         <Text style={[GlobalStyles.buttonStyleText, styles.date]}>{dateWithFormatting}</Text>
         <Text style={[GlobalStyles.p, GlobalStyles.card_question, styles.card_question]}>{answer.question}</Text>
         <Text style={[GlobalStyles.p, GlobalStyles.card_answer, {color: color}]}>{answer.text ? answer.text : 'No answer for this question.'}</Text>
+        <View style={[GlobalStyles.separator, styles.separator]} />
         {Utils.isBlank(answer.location) ? null : 
           <Text style={[GlobalStyles.card_location_text, GlobalStyles.buttonStyleText]}>📍 {this.state.location.name.toUpperCase()}</Text>
         }
+        
+        <Photo imageSource={answer.imageSource} viewStyle={styles.photo} />
         <TouchableOpacity 
           onPress={() => this.dismissLightBox()}
           style={styles.card_close_container}>
@@ -89,7 +87,14 @@ const styles = StyleSheet.create({
     marginTop: 15
   },
   card_close_text: {
-    fontSize: 17
+    fontSize: 20
+  },
+  photo: {
+    marginTop: 30,
+    marginBottom: 15
+  },
+  separator: {
+    marginTop: 10
   }
 })
 

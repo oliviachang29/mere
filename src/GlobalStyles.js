@@ -20,6 +20,14 @@ const GlobalStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center'
   },
+  pullRight_container: {
+    flexDirection: 'row', 
+    justifyContent: 'space-between'
+  },
+  pullRight: {
+    alignSelf: 'flex-end',
+    justifyContent: 'flex-end'
+  },
   dark: {
     color: '#808080',
     fontSize: 20,
@@ -32,12 +40,20 @@ const GlobalStyles = StyleSheet.create({
     fontFamily: 'BrandonGrotesque-Bold'
   },
   h4: {
-    fontFamily: 'FreightDispBold'
+    fontFamily: 'FreightDispBold',
+    fontSize: 18
+  },
+  h5: {
+    color: '#9B9B9B',
+    fontFamily: 'FreightDisplayW01-Book',
+    fontSize: 18,
+    letterSpacing: 0
   },
   p: {
     fontSize: 15,
     fontWeight: 'normal',
-    fontFamily: 'FreightDisplayW01-Book'
+    fontFamily: 'FreightDisplayW01-Book',
+    letterSpacing: 0
   },
   buttonStyleText: {
     fontFamily: 'BrandonGrotesque-Bold',
@@ -63,7 +79,7 @@ const GlobalStyles = StyleSheet.create({
     shadowColor: '#565656',
     shadowOffset: {width: 2, height: 2},
     shadowRadius: 10,
-    shadowOpacity: 0.19,
+    shadowOpacity: 0.19
   },
   separator: {
     backgroundColor: '#F4F4F4',
@@ -74,16 +90,6 @@ const GlobalStyles = StyleSheet.create({
 
   // screens/Today
   // screens/Entries/Edit
-  photo_container: {
-    borderColor: 'transparent',
-    borderWidth: 1 / PixelRatio.get(),
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  photo: {
-    width: 150,
-    height: 150
-  },
   emoji: {
     fontSize: 24,
     backgroundColor: 'transparent',
@@ -111,7 +117,7 @@ const GlobalStyles = StyleSheet.create({
     paddingBottom: 34,
     margin: 24,
     marginTop: 16,
-    marginBottom: 16,
+    marginBottom: 16
   },
   card_textInput_container: {
     marginBottom: 20
@@ -125,7 +131,7 @@ const GlobalStyles = StyleSheet.create({
   card_textInput: {
     color: '#9B9B9B',
     fontSize: 20,
-    height: 40,
+    height: 40
     // marginBottom: 10,
   },
   card_location_text: {
@@ -135,7 +141,7 @@ const GlobalStyles = StyleSheet.create({
     height: 2,
     marginTop: -5
   },
-  
+
   // components/Shared/Card.js
   // screens/Answers/Show.js
   card_question: {
@@ -148,8 +154,8 @@ const GlobalStyles = StyleSheet.create({
   card_answer: {
     color: '#808080',
     fontSize: 20,
-    marginBottom: 15,
-  },
+    marginBottom: 15
+  }
 })
 
 module.exports = GlobalStyles

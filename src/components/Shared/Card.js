@@ -4,19 +4,10 @@ import GlobalStyles from '../../GlobalStyles'
 import Utils from '../../Utils'
 import realm from '../../realm'
 import Button from './Button'
+import Photo from './Photo'
 var emojis = Utils.emojis()
 
 class Card extends Component {
-  renderPhoto(imageSource) {
-    if (imageSource != '') {
-      return (
-        <View style={[GlobalStyles.photo_container, {marginBottom: 20}]}>
-          <Image style={GlobalStyles.photo} source={JSON.parse(imageSource)} />
-        </View>
-      )
-    }
-  }
-
   renderAnswers () {
     return this.props.entry.answers.map((answer, i) => {
       var color = answer.text ? '#4A4A4A' : '#9B9B9B'
@@ -25,9 +16,10 @@ class Card extends Component {
         <View key={i}>
           <Text style={[GlobalStyles.p, GlobalStyles.card_question]}>{answer.question}</Text>
           <Text style={[GlobalStyles.p, GlobalStyles.card_answer, {color: color}]}>{answer.text ? answer.text : 'No answer for this question.'}</Text>
-          {Utils.isBlank(answer.location) ? null : 
-            <Text style={[styles.card_location_text, GlobalStyles.buttonStyleText]}>📍 {location.name.toUpperCase()}</Text>
+          {Utils.isBlank(answer.location) ? null
+            : <Text style={[styles.card_location_text, GlobalStyles.buttonStyleText]}>📍 {location.name.toUpperCase()}</Text>
           }
+          <Photo imageSource={answer.imageSource} viewStyle={styles.photo} />
         </View>
       )
     })
@@ -40,10 +32,9 @@ class Card extends Component {
       <View style={[GlobalStyles.container, GlobalStyles.innerContainer, GlobalStyles.shadow, styles.card]}>
         <View style={[styles.card_circle, {backgroundColor: entry.color}]} />
         <Text style={styles.card_title}>{day}</Text>
-        {this.renderPhoto(entry.imageSource)}
         {this.renderAnswers()}
         <View style={styles.card_bottomContainer}>
-          <Button 
+          <Button
             onPress={() => this.gotoEdit(this.props.entry.dateCreated)}
             text='EDIT ENTRY'
             viewStyle={styles.card_editEntry} />
@@ -75,7 +66,7 @@ const styles = StyleSheet.create({
     height: 117,
     marginLeft: -33,
     backgroundColor: '#DD5F8E',
-    borderRadius: 100,
+    borderRadius: 100
   },
   card_title: {
     backgroundColor: 'transparent',
@@ -83,7 +74,7 @@ const styles = StyleSheet.create({
     fontSize: 64,
     fontFamily: 'BrandonGrotesque-Black',
     marginTop: -107,
-    marginBottom: 40,
+    marginBottom: 40
   },
   card_question: {
     color: '#4A4A4A',
@@ -95,7 +86,7 @@ const styles = StyleSheet.create({
   card_answer: {
     color: '#808080',
     fontSize: 20,
-    marginBottom: 15,
+    marginBottom: 15
   },
   card_location_text: {
     marginBottom: 20,
@@ -112,6 +103,14 @@ const styles = StyleSheet.create({
   card_editEntry: {
     marginTop: 5
   },
+  photo: {
+    marginTop: 20,
+    marginBottom: 20
+  },
+  separator: {
+    marginTop: 20,
+    marginBottom: 20
+  }
 })
 
 module.exports = Card

@@ -22,7 +22,7 @@ class Drawer extends Component {
   }
   gotoToday = () => {
     this.toggleDrawer()
-     this.props.navigator.handleDeepLink({
+    this.props.navigator.handleDeepLink({
       link: 'Today'
     })
   }
@@ -34,17 +34,32 @@ class Drawer extends Component {
     })
   }
 
-  gotoMap = () => {
+  gotoProfile = () => {
     this.toggleDrawer()
     this.props.navigator.handleDeepLink({
-      link: 'Map'
+      link: 'Profile'
+    })
+  }
+
+  gotoStats = () => {
+    this.toggleDrawer()
+    this.props.navigator.handleDeepLink({
+      link: 'Stats'
+    })
+  }
+
+  gotoSettings = () => {
+    this.toggleDrawer()
+    this.props.navigator.handleDeepLink({
+      link: 'Settings'
     })
   }
 
   toggleDrawer = () => {
     this.props.navigator.toggleDrawer({
-      side: 'left'
-    });
+      side: 'left',
+      to: 'close'
+    })
   };
 
   render() {
@@ -52,14 +67,12 @@ class Drawer extends Component {
       <View style={styles.container}>
         <Button onPress={this.gotoToday} text='today' />
         <Button onPress={this.gotoCalendar} text='calendar' />
-        <Button onPress={this.gotoMap} text='map' />
-        <Button text='profile' />
-        <Button text='settings' />
-        <Text>currentScreen: {this.state.currentScreen}</Text>
+        <Button onPress={this.gotoProfile} text='profile' />
+        <Button onPress={this.gotoStats} text='stats' />
+        <Button onPress={this.gotoSettings} text='settings' />
+        {/*<Text>currentScreen: {this.state.currentScreen}</Text>*/}
 
-        <View style={styles.copyright_container}>
-          <Text style={[GlobalStyles.p, styles.copyright]}>(c) Olivia Chang 2017</Text>
-        </View>
+        
       </View>
     );
   }
@@ -71,6 +84,7 @@ const styles = StyleSheet.create({
     width: 200,
     paddingLeft: 40,
     backgroundColor: '#ffffff',
+    marginTop: 30
   },
   button: {
     marginTop: 30,
@@ -78,17 +92,6 @@ const styles = StyleSheet.create({
     color: '#AAAAAA',
     fontFamily: 'BrandonGrotesque-Medium',
     letterSpacing: 3.87
-  },
-  copyright_container: {
-    justifyContent: 'flex-end',
-    flexDirection: 'column',
-    flex: 1
-  },
-  copyright: {
-    justifyContent: 'flex-end',
-    color: '#B3B3B3',
-    fontSize: 18,
-    marginBottom: 47
   }
 });
 

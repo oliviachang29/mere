@@ -7,27 +7,27 @@ registerScreens()
 Navigation.startSingleScreenApp({
   screen: {
     screen: 'app.Today',
-    title: 'T O D A Y',
+    title: 'T O D A Y'
   },
   passProps: {
     currentScreen: 'today'
   },
   drawer: {
     left: {
-      screen: 'app.Drawer',
+      screen: 'app.Drawer'
     },
     style: {
       drawerShadow: false,
       contentOverlayColor: 'rgba(0,0,0,0.2)',
-      leftDrawerWidth: 65,
+      leftDrawerWidth: 65
     },
     disableOpenGesture: false,
     // type: 'TheSideBar',
-    animationType: 'slide-and-scale',
+    animationType: 'slide-and-scale'
   },
   appStyle: {
     orientation: 'portrait'
   },
-  animationType: 'fade',
+  animationType: 'fade'
 
 })

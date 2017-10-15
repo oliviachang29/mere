@@ -10,11 +10,7 @@ var monthNames = Utils.monthNames()
 var emojis = Utils.emojis()
 
 export default class EditEntry extends Component {
-  static navigatorStyle = {
-    navBarTextFontFamily: 'BrandonGrotesque-Medium',
-    navBarTextFontSize: 20,
-    // navBarButtonColor: '#D8D8D8',
-  }
+  static navigatorStyle = Utils.navigatorStyle()
   
   static navigatorButtons = {
     leftButtons: [
@@ -28,13 +24,23 @@ export default class EditEntry extends Component {
 
   constructor(props) {
     super(props)
+    realm.addListener('change', () => {
+      this.getEntry()
+    })
+    this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
+  }
+
+  componentWillMount() {
+    this.getEntry()
+  }
+
+  getEntry() {
     var entry = realm.objects('Entry').filtered('dateCreated = $0', this.props.dateCreated)[0]
-    this.state = {
+    this.setState({
       entry: entry,
       answers: Utils.pushAnswersToArray(entry),
       rating: entry.rating,
-    }
-    this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
+    })
   }
 
   onNavigatorEvent(event) { // this is the onPress handler for the two buttons together
@@ -65,7 +71,7 @@ export default class EditEntry extends Component {
   }
 
   gotoEditAnswer(answer, color1, color2){
-    this.props.navigator.showModal({
+    this.props.navigator.push({
       screen: 'app.EditAnswer',
       title: 'A N S W E R',
       passProps: {answer, color1, color2}
@@ -118,25 +124,6 @@ export default class EditEntry extends Component {
       height
     })
   }
-
-  saveEntry() {
-//    console.log('saveEntry() called')
-    Keyboard.dismiss()
-    realm.write(() => {
-      this.state.entry.answers = this.state.answers
-      this.state.entry.rating = this.state.rating
-    })
-
-    this.props.navigator.showInAppNotification({
-      screen: 'app.Notification',
-      passProps: {
-        title: '✓ All changes saved.',
-        type: 'success'
-      },
-      autoDismissTimerSec: 2
-    })
-  }
-
 }
 
 const styles = StyleSheet.create({
