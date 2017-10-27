@@ -1,6 +1,9 @@
 import {Platform} from 'react-native'
 import {Navigation} from 'react-native-navigation'
 import registerScreens from './screens'
+import Utils from './Utils'
+import store from 'react-native-simple-store'
+var TouchID = require('react-native-touch-id').default
 
 registerScreens()
 
@@ -31,3 +34,23 @@ Navigation.startSingleScreenApp({
   animationType: 'fade'
 
 })
+
+TouchID.isSupported()
+  .then(supported => {
+    console.log('TouchID is supported.')
+    store.get('user')
+      .then(result => {
+        if (result.touchIDEnabled) {
+          this.props.navigator.resetTo({
+            screen: 'app.Locked'
+          })
+          console.log('Touch ID is enabled')
+        }
+      })
+      .catch(error => {
+        console.log(error)
+      })
+  })
+  .catch(error => {
+    console.log(error)
+  })

@@ -4,6 +4,7 @@ import LinearGradient from 'react-native-linear-gradient'
 import Utils from '../../Utils'
 import GlobalStyles from '../../GlobalStyles'
 import Photo from './Photo'
+var RNFS = require('react-native-fs')
 
 var gradientColors = Utils.gradientColors()
 
@@ -11,6 +12,7 @@ class Answer extends Component {
   render () {
   	var answer = this.props.answer
   	var i = this.props.i
+    var source = Utils.sourceFromFileName(answer.fileName)
     return (
       <TouchableOpacity style={[GlobalStyles.shadow, GlobalStyles.card_container]} onPress={() => this.props.onPress()}>
 
@@ -26,9 +28,9 @@ class Answer extends Component {
           start={{x: 0.0, y: 0.0}} end={{x: 0.5, y: 1.0}}
                 />
         {Utils.isBlank(answer.location) ? null
-                : <Text style={[GlobalStyles.card_location_text, GlobalStyles.buttonStyleText]}>📍 {this.props.location.name.toUpperCase()}</Text>
-              }
-        <Photo imageSource={answer.imageSource} photoStyle={{marginTop: 20}} />
+          : <Text style={[GlobalStyles.card_location_text, GlobalStyles.buttonStyleText]}>📍 {this.props.location.name.toUpperCase()}</Text>
+        }
+        <Photo imageSource={source} photoStyle={{marginTop: 20}} />
       </TouchableOpacity>
     )
   }

@@ -25,17 +25,15 @@ class Grid extends React.Component {
   }
 
   renderItem (item, itemSize) {
-    console.log(item.src)
-    var src = JSON.parse(item.src)
     return (
-      <TouchableOpacity onPress={() => this.onPhotoPress(item.dateCreated)} key={item.i}>
+      <TouchableOpacity onPress={() => this.onPhotoPress(item.id)} key={item.i}>
         <Photo imageSource={item.src} photoStyle={styles.photo} />
       </TouchableOpacity>
     )
   }
 
-  onPhotoPress (dateCreated) {
-    var answer = realm.objects('Answer').filtered('dateCreated = $0', dateCreated)[0]
+  onPhotoPress (id) {
+    var answer = realm.objects('Answer').filtered('id = $0', id)[0]
     this.props.navigator.showLightBox({
       screen: 'app.ShowAnswer',
       passProps: {
@@ -53,6 +51,7 @@ class Grid extends React.Component {
 const styles = StyleSheet.create({
   photo: {
   	width: 100,
+    // width: '33%',
   	height: 100
   }
 })

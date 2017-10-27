@@ -3,24 +3,14 @@ import { View, Text, StyleSheet, TouchableOpacity, Image, TextInput, Keyboard } 
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import LinearGradient from 'react-native-linear-gradient'
 import Button from '../../components/Shared/Button'
+import XButton from '../../components/Shared/XButton'
 import GlobalStyles from '../../GlobalStyles'
 import realm from '../../realm'
 import Utils from '../../Utils'
 import RNGooglePlaces from 'react-native-google-places'
 import PhotoUpload from '../../components/Shared/PhotoUpload'
 import Photo from '../../components/Shared/Photo'
-
-class XButton extends Component {
-  render () {
-    return (
-      <TouchableOpacity 
-        style={GlobalStyles.pullRight}
-        onPress={this.props.onPress}>
-        <Image source={require('../../assets/images/x.png')} style={styles.x} />
-      </TouchableOpacity>
-    )
-  }
-}
+var RNFS = require('react-native-fs')
 
 class EditAnswer extends Component {
 
@@ -40,13 +30,18 @@ class EditAnswer extends Component {
     super(props)
     var answer = this.props.answer
     var location = answer.location === '' ? '' : JSON.parse(answer.location)
+
+    var source = Utils.sourceFromFileName(answer.fileName)
+
     this.state = {
       text: answer.text,
       height: answer.height,
       location: location,
-      imageSource: answer.imageSource
+      imageSource: source
     }
+
     this.openSearchModal = this.openSearchModal.bind(this)
+    this.removeLocation = this.removeLocation.bind(this)
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
   }
 
@@ -62,6 +57,13 @@ class EditAnswer extends Component {
     .catch(error => console.log(error.message));  // error is a Javascript Error object
   }
 
+  removeLocation() {
+    this.setState({location: ''})
+    realm.write(() => {
+      this.props.answer.location = ''
+    })
+  }
+
   renderLocation() {
     var buttonText = '📍 ' + (this.state.location === '' ? 'add location' : this.state.location.name).toUpperCase()
     return (
@@ -71,30 +73,29 @@ class EditAnswer extends Component {
           text={buttonText}
           viewStyle={[styles.card_locationButton]} />
         {this.state.location === '' ? null : 
-          <XButton onPress={() => this.setState({location: ''})} />
+          <XButton onPress={() => this.removeLocation()} />
         }
       </View>
     )
   }
 
   renderPhoto() {
-    // if imageSource is a string, then don't stringify
-    // if not a string (then an object), stringify
-    var imageSourceForPhoto = (typeof(this.state.imageSource) === 'string') ? this.state.imageSource : JSON.stringify(this.state.imageSource)
     return (
-      <View>
-        <View style={GlobalStyles.pullRight_container}>
-          <PhotoUpload 
-            answer={this.props.answer} 
-            imageSource={this.state.imageSource}
-            onUpload={(imageSource) => {this.setState({imageSource: imageSource})}} />
-          {this.state.imageSource === '' ? null : 
-            <XButton onPress={() => this.setState({imageSource: ''})} />
-          }
-        </View>
-        <Photo imageSource={imageSourceForPhoto} photoStyle={{marginTop: 30}}/>
+      <View style={GlobalStyles.pullRight_container}>
+        <PhotoUpload 
+          answer={this.props.answer} 
+          imageSource={this.state.imageSource}
+          onUpload={(imageSource) => {this.setState({imageSource: imageSource})}}
+          photo />
       </View>
     )
+  }
+
+  onEndEditing(state) {
+    this.setState(state)
+    realm.write(() => {
+      this.props.answer.text = state.text
+    })
   }
 
   render () {
@@ -114,7 +115,7 @@ class EditAnswer extends Component {
               multiline
               placeholder="Write about your day here..."
               defaultValue={state.text}
-              onEndEditing={() => this.setState(state)}
+              onEndEditing={() => this.onEndEditing(state)}
               onChangeText={(text) => {state.text = text}}
               style={[GlobalStyles.p, GlobalStyles.card_textInput, {height: this.state.height}]}
               onContentSizeChange={(e) => this.setState({height: e.nativeEvent.contentSize.height + 10})}
@@ -132,8 +133,8 @@ class EditAnswer extends Component {
     )
   }
 
-  onNavigatorEvent(event) { // this is the onPress handler for the two buttons together
-    if (event.type == 'NavBarButtonPress') { // this is the event type for button presses
+  onNavigatorEvent(event) {
+    if (event.type == 'NavBarButtonPress') {
       if (event.id == 'x') {
         Keyboard.dismiss()
         realm.write(() => {
@@ -155,9 +156,6 @@ const styles = StyleSheet.create({
   card_subheadingContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between'
-  },
-  x: {
-    width: 15
   },
   card_locationButton: {
     // flex: 1,

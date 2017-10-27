@@ -50,14 +50,14 @@ const GlobalStyles = StyleSheet.create({
     letterSpacing: 0
   },
   p: {
-    fontSize: 15,
+    fontSize: 20,
     fontWeight: 'normal',
     fontFamily: 'FreightDisplayW01-Book',
     letterSpacing: 0
   },
   buttonStyleText: {
     fontFamily: 'BrandonGrotesque-Bold',
-    fontSize: 15,
+    fontSize: 16,
     letterSpacing: 2.5
   },
   thinUnderline: {

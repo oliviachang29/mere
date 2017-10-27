@@ -1,4 +1,4 @@
-
+'use strict'
 import React, {Component} from 'react'
 import {
   Text,
@@ -15,7 +15,7 @@ import realm from '../../realm'
 import Card from '../../components/Shared/Card'
 const {height} = Dimensions.get('window')
 var monthNames = Utils.monthNames()
-
+var colors = Utils.colors()
 // parse Date () into a format acceptable for calendar, ex: '2017-08-27'
 function convertDateToString (date) {
   var month = (date.getMonth() + 1) < 10 ? '0' + (date.getMonth() + 1) : (date.getMonth() + 1)
@@ -31,7 +31,6 @@ export default class Calendar extends Component {
   constructor (props) {
     super(props)
 
-    // example of items: {'2017-09-02': [{date: new Date(2017, 8, 2)}]}
     LocaleConfig.locales['en'] = {
       monthNames: Utils.monthNames(),
       monthNamesShort: Utils.monthNamesShort(),
@@ -43,6 +42,7 @@ export default class Calendar extends Component {
 
     this.state = {
       src: '',
+      // example of items: {'2017-09-02': [{date: new Date(2017, 8, 2)}]}
       items: [],
       today: '',
       quotes: []
@@ -219,11 +219,21 @@ export default class Calendar extends Component {
   }
 
   gotoNewEntry(date) {
-    console.log(date)
+    date.setDate(date.getDate()+1)
+    var entry
+    realm.write(() => {
+      entry = realm.create('Entry', {
+        id: Utils.uuid(),
+        dateCreated: date,
+        answers: [],
+        color: colors[Utils.randomNum(21, 0)]
+      })
+    })
+    Utils.createAnswers(entry)
     this.props.navigator.push({
-      screen: 'app.NewEntry',
+      screen: 'app.EditEntry',
       title: 'N E W',
-      passProps: {date}
+      passProps: {dateCreated: date}
     })
   }
 }

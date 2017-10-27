@@ -46,18 +46,10 @@ function getRegionForCoordinates(points) {
 
 class Map extends React.Component {
   static navigatorStyle = Utils.navigatorStyle()
-  static navigatorButtons = {
-    leftButtons: [
-      {
-        icon: require('../assets/images/back-arrow.png'),
-        id: 'back',
-        disableIconTint: true,
-      }
-    ]
-  }
+  static navigatorButtons = Utils.navigatorButtons()
 
   constructor(props) {
-    super(props);
+    super(props)
 
     // Get answers with a location
     let answers = realm.objects('Answer');
@@ -90,26 +82,20 @@ class Map extends React.Component {
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
   }
 
-  onNavigatorEvent(event) {
-    if (event.type == 'NavBarButtonPress') {
-      if (event.id == 'back') {
-        this.props.navigator.pop()
+  onNavigatorEvent(event) { // this is the onPress handler for the two buttons together
+    if (event.type == 'NavBarButtonPress') { // this is the event type for button presses
+      if (event.id == 'drawer') {
+        this.props.navigator.toggleDrawer({
+          side: 'left',
+          to: 'open'
+        });
       }
     } else if (event.type == 'DeepLink') {
-      if (event.link === 'Today') {
-        this.props.navigator.resetTo({
-          screen: 'app.Today',
-          title: 'T O D A Y',
-          animationType: 'fade'
-        })
-      }
-      if (event.link === 'Calendar') {
-        this.props.navigator.resetTo({
-          screen: 'app.Calendar',
-          title: 'C A L E N D A R',
-          animationType: 'fade',
-        })
-      }
+      this.props.navigator.resetTo({
+        screen: 'app.' + event.link,
+        title: Utils.capitalizeAndSpace(event.link),
+        animationType: 'fade'
+      })
     }
   }
 

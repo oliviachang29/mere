@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
   },
   title: {
     color: 'white',
-    fontFamily: 'FreightDispBold'
+    fontFamily: 'FreightDisplayW01-Book'
   },
   description: {
     color: 'white',

@@ -8,7 +8,7 @@ class Photo extends Component {
     if (this.props.imageSource && this.props.imageSource != '') { // && Utils.parseable(src)) {
       return (
         <View style={[styles.photo_container, this.props.viewStyle]}>
-          <Image style={[styles.photo, this.props.photoStyle]} source={JSON.parse(this.props.imageSource)} />
+          <Image style={[styles.photo, this.props.photoStyle]} source={this.props.imageSource} />
         </View>
       )
     }

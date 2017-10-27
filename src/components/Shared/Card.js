@@ -12,6 +12,7 @@ class Card extends Component {
     return this.props.entry.answers.map((answer, i) => {
       var color = answer.text ? '#4A4A4A' : '#9B9B9B'
       var location = answer.location === '' ? '' : JSON.parse(answer.location)
+      var source = Utils.sourceFromFileName(answer.fileName)
       return (
         <View key={i}>
           <Text style={[GlobalStyles.p, GlobalStyles.card_question]}>{answer.question}</Text>
@@ -19,7 +20,7 @@ class Card extends Component {
           {Utils.isBlank(answer.location) ? null
             : <Text style={[styles.card_location_text, GlobalStyles.buttonStyleText]}>📍 {location.name.toUpperCase()}</Text>
           }
-          <Photo imageSource={answer.imageSource} viewStyle={styles.photo} />
+          <Photo imageSource={source} viewStyle={styles.photo} />
         </View>
       )
     })

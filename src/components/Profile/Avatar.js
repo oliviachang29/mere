@@ -1,21 +1,14 @@
 import React, { Component } from 'react'
-import { View, Image, StyleSheet, PixelRatio } from 'react-native'
+import { View, Image, StyleSheet, PixelRatio, Text } from 'react-native'
 import GlobalStyles from '../../GlobalStyles'
 
 class Avatar extends Component {
-  renderPhoto () {
-    if (this.props.imageSource != '' && this.props.imageSource) {
-      return (
-        <View style={[styles.photo_container, this.props.viewStyle]}>
-          <Image style={[styles.photo, this.props.photoStyle]} source={JSON.parse(this.props.imageSource)} />
-        </View>
-      )
-    }
-  }
-
   render () {
+    console.log('this.props.imageSource...' + JSON.stringify(this.props.imageSource))
     return (
-      <View>{this.renderPhoto()}</View>
+      <View style={[styles.photo_container, this.props.viewStyle]}>
+        {/*<Image style={[styles.photo, this.props.photoStyle]} source={this.props.imageSource} />*/}
+      </View>
     )
   }
 }

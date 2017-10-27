@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import {StyleSheet, View, Text, TouchableOpacity} from 'react-native'
 import GlobalStyles from '../GlobalStyles'
+import Utils from '../Utils'
 
 class Button extends Component {
   render () {
@@ -16,42 +17,17 @@ class Drawer extends Component {
   constructor(props) {
     super(props)
     console.log('props... \n' + JSON.stringify(this.props))
+
     this.state = {
-      currentScreen: this.props.currentScreen
+      currentScreen: this.props.currentScreen,
+      date: Utils.formatDateToNiceString(new Date())
     }
   }
-  gotoToday = () => {
-    this.toggleDrawer()
-    this.props.navigator.handleDeepLink({
-      link: 'Today'
-    })
-  }
 
-  gotoCalendar = () => {
+  goto (link) {
     this.toggleDrawer()
     this.props.navigator.handleDeepLink({
-      link: 'Calendar'
-    })
-  }
-
-  gotoProfile = () => {
-    this.toggleDrawer()
-    this.props.navigator.handleDeepLink({
-      link: 'Profile'
-    })
-  }
-
-  gotoStats = () => {
-    this.toggleDrawer()
-    this.props.navigator.handleDeepLink({
-      link: 'Stats'
-    })
-  }
-
-  gotoSettings = () => {
-    this.toggleDrawer()
-    this.props.navigator.handleDeepLink({
-      link: 'Settings'
+      link: link
     })
   }
 
@@ -60,19 +36,21 @@ class Drawer extends Component {
       side: 'left',
       to: 'close'
     })
-  };
+  }
 
   render() {
     return (
       <View style={styles.container}>
-        <Button onPress={this.gotoToday} text='today' />
-        <Button onPress={this.gotoCalendar} text='calendar' />
-        <Button onPress={this.gotoProfile} text='profile' />
-        <Button onPress={this.gotoStats} text='stats' />
-        <Button onPress={this.gotoSettings} text='settings' />
+        <View>
+          <Button onPress={() => this.goto('Today')} text='⏰  today' />
+          <Button onPress={() => this.goto('Calendar')} text='📅  calendar' />
+          <Button onPress={() => this.goto('Photos')} text='🌄  photos' />
+          <Button onPress={() => this.goto('Map')} text='🗺  map' />
+          <Button onPress={() => this.goto('Stats')} text='📈  stats' />
+          <Button onPress={() => this.goto('Settings')} text='⚙️  settings' />
+        </View>
+        <Text style={[GlobalStyles.p, styles.date]}>{this.state.date}</Text>
         {/*<Text>currentScreen: {this.state.currentScreen}</Text>*/}
-
-        
       </View>
     );
   }
@@ -84,14 +62,20 @@ const styles = StyleSheet.create({
     width: 200,
     paddingLeft: 40,
     backgroundColor: '#ffffff',
-    marginTop: 30
+    marginTop: 30,
+    flexDirection: 'column',
+    justifyContent: 'space-between'
   },
   button: {
     marginTop: 30,
-    fontSize: 20,
+    fontSize: 16,
     color: '#AAAAAA',
     fontFamily: 'BrandonGrotesque-Medium',
     letterSpacing: 3.87
+  },
+  date: {
+    marginBottom: 30,
+    color: '#AAAAAA',
   }
 });
 

@@ -1,9 +1,12 @@
 import realm from './realm'
 import store from 'react-native-simple-store'
-import {Navigation} from 'react-native-navigation'
+var RNFS = require('react-native-fs')
+import uuid from 'uuid'
 
 var monthNamesShort = ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May', 'Jun.', 'Jul.', 'Aug.', 'Sept.', 'Oct.', 'Nov.', 'Dec.']
 var questions = [
+  'What was the funniest part?',
+  'What was the weirdest part?',
   'What did you accomplish today?',
   'What made you happy today?',
   'What problems did you solve today?',
@@ -19,14 +22,14 @@ var questions = [
   'Did you say please and thank you today? To whom?',
   'How did you treat others today?',
   'How much were you online today?',
-  'What did you do to feel productive today? Or, what did you do to feel lazy today?',
+  'What did you do to feel productive today? Or, what did you do to feel lazy?',
   'What shirt did you wear today?',
   'Did you treat yourself today?',
-  'Have I made someone smile today?',
+  'Have you made someone smile today?',
   'What made you stressed today?',
-  'What are you grateful today?',
-  'What new thing did I learn today?',
-  'How did I push myself today?',
+  'What are you grateful for today?',
+  'What new thing did you learn today?',
+  'How did you push yourself today?',
   'How did you relax today?'
 ]
 
@@ -34,7 +37,8 @@ let Utils = {
   navigatorStyle () {
     return {
       navBarTextFontFamily: 'BrandonGrotesque-Medium',
-      navBarTextFontSize: 20
+      navBarTextFontSize: 20,
+      navBarHidden: false
     // navBarButtonColor: '#D8D8D8',
     }
   },
@@ -48,6 +52,32 @@ let Utils = {
         }
       ]
     }
+  },
+  // sets up user and returns whether touch ID is enabled
+  setUpUser() {
+    function setUp() {
+      console.log('this is first time opening app. setting up')
+      store
+        .update('user', {
+          dateJoined: new Date(),
+          touchID: false
+        })
+        .catch(error => {
+          console.log('error: \n\n' + error)
+        })
+    }
+    store.get('user')
+      .then(result => {
+        if (result.dateJoined) {
+         console.log('user has already been set up')
+        } else {
+          setUp()
+        }
+      })
+      .catch(error => {
+        console.log('error: \n\n' + error)
+         setUp()
+      })
   },
   randomNum (max, min) {
     return Math.floor(Math.random() * (max - min + 1)) + min
@@ -95,11 +125,11 @@ let Utils = {
       .then(() => {
         realm.write(() => {
           // Create three entries
-          entry.answers.push({question: 'What was the best part?', dateCreated: new Date()})
-          entry.answers.push({question: 'What was the funniest part?', dateCreated: new Date()})
-          entry.answers.push({question: questions[questionNumber], dateCreated: new Date(), random: true})
+          entry.answers.push({id: uuid.v4(), question: 'What was the best part?', dateCreated: new Date()})
+          entry.answers.push({id: uuid.v4(), question: 'What was the worst part?', dateCreated: new Date()})
+          entry.answers.push({id: uuid.v4(), question: questions[questionNumber], dateCreated: new Date(), random: true})
         })
-        if (questionNumber === 22) {
+        if (questionNumber === questions.length) {
           setStoreQuestionNumber(0)
           console.log('set questionNumber to 0')
         } else {
@@ -108,9 +138,6 @@ let Utils = {
           console.log('set questionNumber to ' + plusOne)
         }
       })
-    // var max = 22
-    // var min = 0
-    // var randomNum = Math.floor(Math.random() * (max - min + 1)) + min;
   },
   pushAnswersToArray (entry) {
     var answers = []
@@ -160,28 +187,16 @@ let Utils = {
   formatDateToNiceString (date) {
     return monthNamesShort[date.getMonth()] + ' ' + date.getDate() + ', ' + date.getFullYear()
   },
-  handleDeepLink (link) {
-    // if (link === 'Today') {
-    //     Navigation.resetTo({
-    //       screen: 'app.Today',
-    //       title: 'T O D A Y',
-    //       animationType: 'fade'
-    //     })
-    //   }
-    // if (link === 'Calendar') {
-    //   Navigation.resetTo({
-    //     screen: 'app.Calendar',
-    //     title: 'C A L E N D A R',
-    //     animationType: 'fade',
-    //   });
-    // }
-    // if (link === 'Profile') {
-    //   Navigation.resetTo({
-    //     screen: 'app.Profile',
-    //     title: 'P R O F I L E',
-    //     animationType: 'fade',
-    //   });
-    // }
+  sourceFromFileName (fileName) {
+    var source = ''
+    if (fileName != '') {
+      let uri = RNFS.DocumentDirectoryPath + '/images/' + fileName
+      source = { uri: uri }
+    }
+    return source
+  },
+  uuid() {
+    return uuid.v4()
   }
 }
 

@@ -1,3 +1,5 @@
+// lightbox
+
 import React, { Component } from 'react'
 import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Dimensions } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
@@ -22,12 +24,14 @@ class ShowAnswer extends Component {
 
   constructor(props) {
     super(props)
-    var location = this.props.answer.location === '' ? '' : JSON.parse(this.props.answer.location)
+    let answer = this.props.answer
+    var location = answer.location === '' ? '' : JSON.parse(answer.location)
+    var source = Utils.sourceFromFileName(answer.fileName)
     this.state = {
       location: location,
-      height: this.props.answer.height + 100
+      height: answer.height + 100,
+      source: source
     }
-
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
   }
 
@@ -45,7 +49,7 @@ class ShowAnswer extends Component {
           <Text style={[GlobalStyles.card_location_text, GlobalStyles.buttonStyleText]}>📍 {this.state.location.name.toUpperCase()}</Text>
         }
         
-        <Photo imageSource={answer.imageSource} viewStyle={styles.photo} />
+        <Photo imageSource={this.state.source} viewStyle={styles.photo} />
         <TouchableOpacity 
           onPress={() => this.dismissLightBox()}
           style={styles.card_close_container}>

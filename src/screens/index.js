@@ -5,8 +5,10 @@ import Notification from './Notification'
 // General screens
 import Today from './Today'
 import Map from './Map'
-import Profile from './Profile'
+import Photos from './Photos'
 import Settings from './Settings'
+import Locked from './Locked'
+import Stats from './Stats'
 // Entries
 import Calendar from './Entries/Calendar'
 import EditEntry from './Entries/Edit'
@@ -21,8 +23,10 @@ export default function () {
 
   Navigation.registerComponent('app.Today', () => Today)
   Navigation.registerComponent('app.Map', () => Map)
-  Navigation.registerComponent('app.Profile', () => Profile)
+  Navigation.registerComponent('app.Photos', () => Photos)
   Navigation.registerComponent('app.Settings', () => Settings)
+  Navigation.registerComponent('app.Locked', () => Locked)
+  Navigation.registerComponent('app.Stats', () => Stats)
 
   Navigation.registerComponent('app.Calendar', () => Calendar)
   Navigation.registerComponent('app.EditEntry', () => EditEntry)

@@ -27,65 +27,71 @@ export default class Today extends Component {
 
   constructor(props) {
     super(props)
+
     // console.log(realm.path)
     console.disableYellowBox = true
 
-    realm.write(() => {
-      realm.delete(realm.objects('Entry'))
-      realm.delete(realm.objects('Answer'))
-    })
+    Utils.setUpUser()
 
     var date = new Date()
+    realm.write(() => {
+      // realm.delete(realm.objects('Entry'))
+      // realm.delete(realm.objects('Answer'))
+    })
+    // get today's entry
     var dateWithoutTime = new Date(date.getFullYear(), date.getMonth(), date.getDate())
-
+    // set entry
     var entry = realm.objects('Entry').filtered('dateCreated = $0', dateWithoutTime)[0]
     if (!entry) {
-      // create the entry
       realm.write(() => {
         entry = realm.create('Entry', {
-          id: realm.objects('Entry').length + 1,
+          id: Utils.uuid(),
           dateCreated: dateWithoutTime,
           answers: [],
-          color: colors[Utils.randomNum(20, 0)]
+          color: colors[Utils.randomNum(21, 0)]
         })
       })
       Utils.createAnswers(entry)
     }
-    // var answers = Utils.pushAnswersToArray(entry)
-    var answers = []
-    entry.answers.map(function (answer, i) {
-      var newAnswer = {}
-      newAnswer.question = answer.question
-      newAnswer.text = answer.text
-      newAnswer.height = answer.height
-      answers.push(newAnswer)
-    })
-    console.log(answers)
-
     this.state = {
-      entry: entry,
-      answers: answers,
-      rating: entry.rating,
       date: Utils.formatDateToNiceString(dateWithoutTime).toUpperCase(),
       timeOfDay: Utils.getTimeOfDay(dateWithoutTime)
-    }    
+    }
 
     realm.addListener('change', () => {
-      // this.getEntry()
+      this.getEntryForToday()
     })
 
     this.changeRating = this.changeRating.bind(this)
+    
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
   }
 
   componentWillMount() {
-    // this.getEntry()
+    this.getEntryForToday()
   }
 
-  getEntry() {
+  getEntryForToday() {
+    var date = new Date()
+    var dateWithoutTime = new Date(date.getFullYear(), date.getMonth(), date.getDate())
     var entry = realm.objects('Entry').filtered('dateCreated = $0', dateWithoutTime)[0]
+    if (!entry) {
+      realm.write(() => {
+        entry = realm.create('Entry', {
+          id: Utils.uuid(),
+          dateCreated: dateWithoutTime,
+          answers: [],
+          color: colors[Utils.randomNum(21, 0)]
+        })
+      })
+      Utils.createAnswers(entry)
+    }
     this.setState({
-      
+      entry: entry,
+      answers: Utils.pushAnswersToArray(entry),
+      rating: entry.rating,
+      dateWithoutTime: dateWithoutTime,
+      showActivityIndicator: false
     })
   }
 
@@ -161,8 +167,8 @@ export default class Today extends Component {
     })
   }
 
-  onNavigatorEvent(event) { // this is the onPress handler for the two buttons together
-    if (event.type == 'NavBarButtonPress') { // this is the event type for button presses
+  onNavigatorEvent(event) {
+    if (event.type == 'NavBarButtonPress') {
       if (event.id == 'drawer') {
         this.props.navigator.toggleDrawer({
           side: 'left',

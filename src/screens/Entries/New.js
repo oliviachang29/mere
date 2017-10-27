@@ -52,7 +52,34 @@ export default class NewEntry extends Component {
   }
 
   getEntry() {
-   this.setState({})
+    var date = new Date();
+    date.setDate(this.props.date.getDate()+1)
+    var entry
+    realm.write(() => {
+      entry = realm.create('Entry', {
+        id: realm.objects('Entry').length + 1,
+        dateCreated: date,
+        answers: [],
+        color: colors[Utils.randomNum(20, 0)]
+      })
+    })
+    Utils.createAnswers(entry)
+    this.setState({
+      entry: entry,
+      answers: Utils.pushAnswersToArray(entry),
+      rating: entry.rating
+    })
+  }
+
+  onNavigatorEvent(event) { // this is the onPress handler for the two buttons together
+    if (event.type == 'NavBarButtonPress') { // this is the event type for button presses
+      if (event.id == 'save') {
+        this.saveEntry()
+      }
+      if (event.id == 'back') {
+        this.props.navigator.pop()
+      }
+    }
   }
 
   renderAnswers() {
@@ -60,14 +87,22 @@ export default class NewEntry extends Component {
       var text = answer.text != '' ? answer.text : 'Tap to answer...'
       var location = answer.location === '' ? '' : JSON.parse(answer.location)
       return (
-        <Answer
-          key={i} 
+        <Answer 
+          key={i}
           i={i}
           location={location} 
           answer={answer} 
           onPress={() => this.gotoEditAnswer(answer, gradientColors[i].first, gradientColors[i].second)}
           text={text} />
       )
+    })
+  }
+
+  gotoEditAnswer(answer, color1, color2){
+    this.props.navigator.push({
+      screen: 'app.EditAnswer',
+      title: 'A N S W E R',
+      passProps: {answer, color1, color2}
     })
   }
 
@@ -100,34 +135,23 @@ export default class NewEntry extends Component {
     var entry = this.state.entry
     var date = monthNames[entry.dateCreated.getMonth()] + ' ' + entry.dateCreated.getDate()
     return (
-      <ScrollView style={styles.innerContainer} showsVerticalScrollIndicator={false}>
+      <ScrollView style={[styles.innerContainer]}>
         <Text style={[GlobalStyles.h4, styles.date]}>{date}</Text>
         <View style={[GlobalStyles.separator, styles.separator]} />
         <View style={GlobalStyles.emoji_container}>
           {this.renderEmojiScale()}
         </View>
         {this.renderAnswers()}
+        {/* {this.renderAnswers()} */}
       </ScrollView>
     )
   }
 
-  gotoEditAnswer(answer, color1, color2){
-    this.props.navigator.push({
-      screen: 'app.EditAnswer',
-      title: 'A N S W E R',
-      passProps: {answer, color1, color2}
+  updateSize = (height) => {
+    this.setState({
+      height
     })
   }
-
-  onNavigatorEvent(event) {
-    if (event.type == 'NavBarButtonPress') { // this is the event type for button presses
-      if (event.id == 'back') {
-        this.props.navigator.pop()
-      }
-    }
-  }
-
-
 }
 
 const styles = StyleSheet.create({
