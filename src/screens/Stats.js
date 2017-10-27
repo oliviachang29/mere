@@ -3,6 +3,9 @@ import { View, Text, StyleSheet, ScrollView, Image, PixelRatio} from 'react-nati
 import GlobalStyles from '../GlobalStyles'
 import realm from '../realm'
 import Utils from '../Utils'
+// import { VictoryChart, VictoryTheme, VictoryLine } from "victory-native";
+
+var moment = require('moment');
 var emojis = Utils.emojis()
 var emoji_captions = [
 'very sads.',
@@ -11,6 +14,29 @@ var emoji_captions = [
 'pretty happy.',
 'very happy.'
 ]
+
+function isWithinPastNumberOfDays(date, numberOfDays) {
+  return (moment().diff(date, 'days') < numberOfDays)
+}
+
+
+class StatItem extends Component {
+  render () {
+    return (
+      <View style={[styles.stats_indv_container, styles.stats_locations_container]}>
+        {this.props.flipped ? 
+          <Text style={[GlobalStyles.h5, styles.stats_caption]}>{this.props.caption}</Text>
+          : null
+        }
+        <Text style={styles.stats_amount}>{this.props.amount}</Text>
+        {this.props.flipped ? null :
+          <Text style={[GlobalStyles.h5, styles.stats_caption]}>{this.props.caption}</Text>
+        }
+      </View>
+    )
+  }
+}
+
 class Stats extends Component {
   static navigatorStyle = Utils.navigatorStyle()
   static navigatorButtons = Utils.navigatorButtons()
@@ -25,54 +51,82 @@ class Stats extends Component {
     let answersWithLocation = answers.filtered('location != ""')
 
     var moodTotal = 0
+    var past7Days = 0
+    var past30Days = 0
+    var pastYear = 0
     entries.map(function(entry, i) {
       moodTotal += entry.rating
+      if (isWithinPastNumberOfDays(entry.dateCreated, 365)) {
+        console.log('entry was made within last year')
+        pastYear += 1
+        if (isWithinPastNumberOfDays(entry.dateCreated, 30)) {
+          console.log('entry was made within last 30 days')
+          past30Days += 1
+          if (isWithinPastNumberOfDays(entry.dateCreated, 7)) {
+            console.log('entry was made within last 7 days')
+            past7Days += 1
+          }
+        }
+      }
     })
-    console.log(moodTotal)
+    // calculate average mood and round
     var averageMood = Math.round(moodTotal / entries.length)
-    console.log(averageMood)
 
     this.state = {
       entryCount: entryCount,
       locationsCount: answersWithLocation.length,
       photosCount: answersWithPhoto.length,
-      averageMood: averageMood
+      averageMood: averageMood,
+      past7Days: past7Days,
+      past30Days: past30Days,
+      pastYear: pastYear
     }
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
   }
 
   render () {
     return (
-      <ScrollView style={[GlobalStyles.innerContainer, styles.innerContainer]}>
+      <ScrollView style={styles.innerContainer} showsVerticalScrollIndicator={false}>
         <View style={[styles.photo_container, this.props.viewStyle]}>
           <Image style={[styles.photo, this.props.photoStyle]} source={require('../assets/images/avatar.png')} />
         </View>
         <Text style={[GlobalStyles.buttonStyleText, styles.yourActivityText]}>YOU</Text>
-        <View style={[GlobalStyles.separator, styles.separator]} />
-        <View style={styles.stats_container}>
-          <View style={[styles.stats_indv_container, styles.stats_entries_container]}>
-            <Text style={[styles.stats_amount]}>{this.state.entryCount}</Text>
-            <Text style={[GlobalStyles.h5, styles.stats_caption]}>entries</Text>
-          </View>
-          <View style={[styles.stats_indv_container, styles.stats_locations_container]}>
-            <Text style={styles.stats_amount}>{this.state.locationsCount}</Text>
-            <Text style={[GlobalStyles.h5, styles.stats_caption]}>locations</Text>
-          </View>
-          <View style={[styles.stats_indv_container, styles.stats_pictures_container]}>
-            <Text style={styles.stats_amount}>{this.state.photosCount}</Text>
-            <Text style={[GlobalStyles.h5, styles.stats_caption]}>pictures</Text>
+        <View style={styles.entriesCountContainer}>
+          <View style={[styles.stats_container]}>
+            <StatItem 
+              amount={this.state.entryCount}
+              caption='entries' />
+            <StatItem 
+              amount={this.state.locationsCount}
+              caption='locations' />
+            <StatItem 
+              amount={this.state.photosCount}
+              caption='pictures' />
           </View>
         </View>
-        <View style={[GlobalStyles.separator, styles.separator]} />
         <View style={styles.averageMood_container}>
           {/*<Text style={[GlobalStyles.buttonStyleText, styles.averageMood_title]}>AVERAGE MOOD</Text>*/}
           <Text style={styles.averageMood_emoji}> {emojis[this.state.averageMood]} </Text> 
-          <Text style={[GlobalStyles.p, styles.averageMood_text]}>On average, you are {emoji_captions[this.state.averageMood]}</Text>
+          <Text style={[GlobalStyles.p, styles.text]}>On average, you are {emoji_captions[this.state.averageMood]}</Text>
         </View>
-        
-        
-        
-        {/*<Text style={[GlobalStyles.buttonStyleText]}>LATEST STREAK</Text>*/}
+        {/*<SimpleChart />*/}
+        <View style={[GlobalStyles.separator, styles.separator]} />
+        <Text style={[GlobalStyles.p, styles.text]}>Number of entries made in the past...</Text>
+        <View style={[styles.stats_container]}>
+          <StatItem 
+            amount={this.state.past7Days}
+            caption='7 days'
+            flipped />
+          <StatItem 
+            amount={this.state.past30Days}
+            caption='30 days'
+            flipped />
+          <StatItem 
+            amount={this.state.pastYear}
+            caption='year'
+            flipped />
+        </View>
+
       </ScrollView>
     )
   }
@@ -97,9 +151,10 @@ class Stats extends Component {
 
 const styles = StyleSheet.create({
   innerContainer: {
-    marginTop: 30
+    
   },
   photo_container: {
+    marginTop: 30,
     borderColor: 'transparent',
     borderWidth: 1 / PixelRatio.get(),
     justifyContent: 'center',
@@ -116,16 +171,25 @@ const styles = StyleSheet.create({
     alignSelf: 'center'
   },
   separator: {
-    width: '33%',
+    width: '50%',
     alignSelf: 'center',
-    marginTop: 20,
-    marginBottom: 20
+    marginTop: 40,
+    marginBottom: 40
+  },
+  entriesCountContainer: {
+    backgroundColor: '#F9F9F9',
+    marginTop: 30,
+    marginBottom: 30,
+    paddingTop: 30,
+    paddingBottom: 30
   },
   stats_container: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 10,
-    marginBottom: 20
+    marginBottom: 20,
+    marginLeft: 60,
+    marginRight: 60
   },
   stats_indv_container: {
     alignItems: 'center'
@@ -151,19 +215,27 @@ const styles = StyleSheet.create({
     // marginTop: 10,
     // marginBottom: 30
   },
-  averageMood_title: {
-    
-  },
   averageMood_emoji: {
     fontSize: 30,
-    marginTop: 15,
     marginBottom: 15,
     alignSelf: 'center'
   },
-  averageMood_text: {
+  text: {
     alignSelf: 'center',
-    fontSize: 17
-  }
+    marginTop: 15,
+    marginBottom: 15,
+    // fontSize: 17
+  },
+  chart: {
+    width: 200,
+    height: 200,
+  },
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'white',
+  },
 })
 
 module.exports = Stats

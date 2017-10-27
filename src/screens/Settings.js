@@ -3,9 +3,7 @@ import { Platform, View, Text, ScrollView, StyleSheet, Switch } from 'react-nati
 import store from 'react-native-simple-store'
 import GlobalStyles from '../GlobalStyles'
 import Utils from '../Utils'
-import Avatar from '../components/Profile/Avatar'
 import FancyTextInput from '../components/Settings/FancyTextInput'
-import AvatarUpload from '../components/Settings/AvatarUpload'
 var TouchID = require('react-native-touch-id').default
 
 class Settings extends Component {
