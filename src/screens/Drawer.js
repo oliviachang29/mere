@@ -19,8 +19,7 @@ class Drawer extends Component {
     console.log('props... \n' + JSON.stringify(this.props))
 
     this.state = {
-      currentScreen: this.props.currentScreen,
-      date: Utils.formatDateToNiceString(new Date())
+      currentScreen: this.props.currentScreen
     }
   }
 
@@ -49,7 +48,6 @@ class Drawer extends Component {
           <Button onPress={() => this.goto('Stats')} text='📈  stats' />
           <Button onPress={() => this.goto('Settings')} text='⚙️  settings' />
         </View>
-        <Text style={[GlobalStyles.p, styles.date]}>{this.state.date}</Text>
         {/*<Text>currentScreen: {this.state.currentScreen}</Text>*/}
       </View>
     );

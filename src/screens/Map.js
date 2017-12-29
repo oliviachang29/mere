@@ -60,11 +60,12 @@ class Map extends React.Component {
        var newMarker = {}
        var location = JSON.parse(answer.location)
        var coordinate = {latitude: location.latitude, longitude: location.longitude}
-       var dateFormatted = Utils.formatDateToNiceString(answer.dateCreated)
+       var dateFormatted = Utils.formatDate(answer.dateCreated)
        newMarker.title = dateFormatted
        newMarker.description = location.name
        newMarker.coordinate = {latitude: location.latitude, longitude: location.longitude}
        newMarker.dateCreated = answer.dateCreated
+       // newMarker.id = answer.id
        markers.push(newMarker)
        coordinates.push(coordinate)
     })
@@ -109,7 +110,7 @@ class Map extends React.Component {
         >
         {this.state.markers.map((marker, i) => (
           <MapView.Marker coordinate={marker.coordinate} key={i}>
-            <Marker title={marker.title} description={marker.description} onPress={() => this.onMarkerPress(marker)}/>
+            <Marker title={marker.title} onPress={() => this.onMarkerPress(marker)}/>
           </MapView.Marker>
         ))}
           

@@ -114,6 +114,7 @@ class EditAnswer extends Component {
               editable
               multiline
               placeholder="Write about your day here..."
+              placeholderTextColor="#4A4A4A"
               defaultValue={state.text}
               onEndEditing={() => this.onEndEditing(state)}
               onChangeText={(text) => {state.text = text}}

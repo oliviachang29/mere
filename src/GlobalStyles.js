@@ -50,6 +50,7 @@ const GlobalStyles = StyleSheet.create({
     letterSpacing: 0
   },
   p: {
+    color: '#4A4A4A',
     fontSize: 20,
     fontWeight: 'normal',
     fontFamily: 'FreightDisplayW01-Book',
@@ -129,7 +130,7 @@ const GlobalStyles = StyleSheet.create({
     color: '#4A4A4A'
   },
   card_textInput: {
-    color: '#9B9B9B',
+    color: '#4A4A4A',
     fontSize: 20,
     height: 40
     // marginBottom: 10,
@@ -139,7 +140,7 @@ const GlobalStyles = StyleSheet.create({
   },
   linearGradient: {
     height: 2,
-    marginTop: -5
+    // marginTop: -5
   },
 
   // components/Shared/Card.js

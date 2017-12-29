@@ -1,5 +1,6 @@
+'use strict'
 import React, { Component } from 'react'
-import { View, Text, StyleSheet, TextInput, ScrollView, TouchableOpacity, Keyboard} from 'react-native'
+import { View, Text, StyleSheet, TextInput, Alert, ScrollView, TouchableOpacity, Keyboard} from 'react-native'
 import GlobalStyles from '../../GlobalStyles'
 import Utils from '../../Utils'
 import realm from '../../realm'
@@ -19,7 +20,14 @@ export default class EditEntry extends Component {
         id: 'back',
         disableIconTint: true,
       }
-    ]
+    ],
+    // rightButtons: [
+    //   {
+    //     icon: require('../../assets/images/trash-can.png'),
+    //     id: 'delete',
+    //     disableIconTint: true,
+    //   }
+    // ]
   }
 
   constructor(props) {
@@ -43,6 +51,25 @@ export default class EditEntry extends Component {
     })
   }
 
+  deleteEntry() {
+    this.props.navigator.pop()
+
+    realm.write(() => {
+      if (this.state.entry) {
+        realm.delete(this.state.entry)  
+      }
+      
+      if (this.state.answers) {
+        this.state.answers.map(function(answer, i) {
+          realm.delete(answer)  
+        })
+      }
+    })
+
+    this.props.navigator.pop()
+
+  }
+
   onNavigatorEvent(event) { // this is the onPress handler for the two buttons together
     if (event.type == 'NavBarButtonPress') { // this is the event type for button presses
       if (event.id == 'save') {
@@ -51,6 +78,16 @@ export default class EditEntry extends Component {
       if (event.id == 'back') {
         this.props.navigator.pop()
       }
+      // if (event.id == 'delete') {
+      //   Alert.alert(
+      //     'Are you sure you want to delete this entry?',
+      //     'Deleting this entry will erase all content, photos, and locations in this entry.',
+      //     [
+      //       {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+      //       {text: 'Delete', onPress: () => this.deleteEntry(), style: 'destructive'},
+      //     ],
+      //   )
+      // }
     }
   }
 
@@ -107,14 +144,13 @@ export default class EditEntry extends Component {
     var entry = this.state.entry
     var date = monthNames[entry.dateCreated.getMonth()] + ' ' + entry.dateCreated.getDate()
     return (
-      <ScrollView style={[styles.innerContainer]}>
+      <ScrollView style={[styles.innerContainer]} showsVerticalScrollIndicator={false}>
         <Text style={[GlobalStyles.h4, styles.date]}>{date}</Text>
         <View style={[GlobalStyles.separator, styles.separator]} />
         <View style={GlobalStyles.emoji_container}>
           {this.renderEmojiScale()}
         </View>
         {this.renderAnswers()}
-        {/* {this.renderAnswers()} */}
       </ScrollView>
     )
   }

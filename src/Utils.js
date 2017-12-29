@@ -2,6 +2,7 @@ import realm from './realm'
 import store from 'react-native-simple-store'
 var RNFS = require('react-native-fs')
 import uuid from 'uuid'
+var moment = require('moment');
 
 var monthNamesShort = ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May', 'Jun.', 'Jul.', 'Aug.', 'Sept.', 'Oct.', 'Nov.', 'Dec.']
 var questions = [
@@ -125,11 +126,11 @@ let Utils = {
       .then(() => {
         realm.write(() => {
           // Create three entries
-          entry.answers.push({id: uuid.v4(), question: 'What was the best part?', dateCreated: new Date()})
-          entry.answers.push({id: uuid.v4(), question: 'What was the worst part?', dateCreated: new Date()})
-          entry.answers.push({id: uuid.v4(), question: questions[questionNumber], dateCreated: new Date(), random: true})
+          entry.answers.push({id: uuid.v4(), question: 'What was the best part?', dateCreated: entry.dateCreated})
+          entry.answers.push({id: uuid.v4(), question: 'What was the worst part?', dateCreated: entry.dateCreated})
+          entry.answers.push({id: uuid.v4(), question: questions[questionNumber], dateCreated: entry.dateCreated, random: true})
         })
-        if (questionNumber === questions.length) {
+        if (questionNumber === (questions.length - 1)) {
           setStoreQuestionNumber(0)
           console.log('set questionNumber to 0')
         } else {
@@ -184,8 +185,8 @@ let Utils = {
   capitalizeAndSpace (text) {
     return text.split('').join(' ').toUpperCase()
   },
-  formatDateToNiceString (date) {
-    return monthNamesShort[date.getMonth()] + ' ' + date.getDate() + ', ' + date.getFullYear()
+  formatDate (date) {
+    return moment(date).format('MMM D, YYYY')
   },
   sourceFromFileName (fileName) {
     var source = ''

@@ -16,6 +16,7 @@ import Card from '../../components/Shared/Card'
 const {height} = Dimensions.get('window')
 var monthNames = Utils.monthNames()
 var colors = Utils.colors()
+var quotes = require('../../assets/quotes.json')
 // parse Date () into a format acceptable for calendar, ex: '2017-08-27'
 function convertDateToString (date) {
   var month = (date.getMonth() + 1) < 10 ? '0' + (date.getMonth() + 1) : (date.getMonth() + 1)
@@ -45,45 +46,21 @@ export default class Calendar extends Component {
       // example of items: {'2017-09-02': [{date: new Date(2017, 8, 2)}]}
       items: [],
       today: '',
-      quotes: []
+      quotes: quotes
     }
-    this.onDayChange = this.onDayChange.bind(this)
-    this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
+
     realm.addListener('change', () => {
       const loadToday = this.loadToday()
       this.setState({src: loadToday[0], items: loadToday[1], today: loadToday[2]})
     })
+
+    this.onDayChange = this.onDayChange.bind(this)
+    this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
   }
 
   componentWillMount() {
     const loadToday = this.loadToday()
     this.setState({src: loadToday[0], items: loadToday[1], today: loadToday[2]})
-    // TODO: fix
-    // get random quotes
-    // 50 quotes (5 x 10 per request)
-    
-    // for (var i = 0; i < 5; i++) {
-    //   var cat = (i % 2 === 0) ? 'movies' : 'famous'
-    //   fetch('https://andruxnet-random-famous-quotes.p.mashape.com/?', {
-    //       method: 'GET',
-    //       headers: {
-    //         'Accept': 'application/json',
-    //         'X-Mashape-Key': 'mkta6gCOL8mshsMKm9KKgAvXYGWCp1q7WGgjsn5DMAVNLUHYnc',
-    //         'count': '10',
-    //         'cat': cat
-    //       }
-    //     })
-    //     .then((response) => {
-    //       response.json()
-    //       console.log(response)
-    //     })
-    //     .then((responseJson) => {
-    //       this.setState({quotes: this.state.quotes.concat(responseJson)})
-    //     })
-    //     .catch((error) => console.log(error))
-        
-    // }
-
   }
 
   loadToday() {
@@ -160,23 +137,19 @@ export default class Calendar extends Component {
           <Text style={styles.emptyState_button_text}>Add an entry</Text>
         </TouchableOpacity>
       )
-    } else {
-      return (
-        <Text style={[GlobalStyles.p, styles.emptyState_future]}>Unable to add an entry because it's the future and we can't time travel. We're working on that.</Text>
-      )
     }
   }
 
   // Empty State
   renderEmptyDate (day) {
     console.log(day)
-    var randomNum = Utils.randomNum(21, 0)
+    var randomNum = Utils.randomNum(quotes.length, 0)
     return (
       <View>
         <View style={[GlobalStyles.container, styles.emptyState_container]}>
           <Text style={[GlobalStyles.p, GlobalStyles.centered, styles.emptyState_text]}>No entry on this date.</Text>
           <Text style={[GlobalStyles.p, styles.emptyState_quote]}>{this.state.quotes[randomNum] ? this.state.quotes[randomNum].quote : ''}</Text>
-          <Text style={[GlobalStyles.p, styles.emptyState_author]}>{this.state.quotes[randomNum] ? '- ' + this.state.quotes[randomNum].author : ''}</Text>
+          <Text style={[GlobalStyles.p, styles.emptyState_author]}>{this.state.quotes[randomNum] ? '- ' + this.state.quotes[randomNum].name : ''}</Text>
           {this.renderEmptyStateButton(day[0])}
         </View>
         <View style={styles.separator} />
@@ -267,9 +240,9 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   },
   emptyState_author: {
+    color: '#B3B3B3',
+    fontSize: 20,
     marginTop: 30,
-    backgroundColor: '#B3B3B3',
-    fontSize: 20
   },
   emptyState_button: {
     alignItems: 'center',

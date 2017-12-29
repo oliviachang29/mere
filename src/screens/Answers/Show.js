@@ -38,7 +38,7 @@ class ShowAnswer extends Component {
   render () {
     var color = this.state.text ? '#4A4A4A' : '#9B9B9B'
     var answer = this.props.answer
-    var dateWithFormatting = Utils.formatDateToNiceString(answer.dateCreated).toUpperCase()
+    var dateWithFormatting = Utils.formatDate(answer.dateCreated).toUpperCase()
     return (
       <ScrollView style={[styles.innerContainer]}>
         <Text style={[GlobalStyles.buttonStyleText, styles.date]}>{dateWithFormatting}</Text>

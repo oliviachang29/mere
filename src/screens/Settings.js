@@ -82,10 +82,11 @@ class Settings extends Component {
     var build = '1'
     return (
       <ScrollView style={[GlobalStyles.innerContainer, styles.innerContainer]}>
+        <View style={{marginTop: 30}} />
         {this.renderTouchID()}
         <Text style={GlobalStyles.buttonStyleText}>ABOUT</Text>
         <Text style={[GlobalStyles.p, styles.text]}>For most of us, journaling isn’t a natural habit. Mere changes that by simplifying the process: it asks three questions each day, and three questions only. With a simple format, you’ll get started journaling in no time.</Text>
-        <Text style={[GlobalStyles.p, styles.text]}>Mere was created for the 2017 Congressional App Challenge.</Text>
+        <Text style={[GlobalStyles.p, styles.text]}>Mere is a 2017 Congressional App Challenge winner.</Text>
         <View style={[GlobalStyles.separator, styles.separator]} />
         <Text style={[GlobalStyles.p, styles.text, styles.grayText]}>© 2017 Olivia Chang. All rights reserved.</Text>
         <Text style={[GlobalStyles.p, styles.text, styles.grayText]}>Version: {version} ● Build: {build}</Text>
@@ -115,10 +116,6 @@ class Settings extends Component {
 }
 
 const styles = StyleSheet.create({
-  innerContainer: {
-    marginTop: 30,
-    flex: 1
-  },
   separator: {
     marginTop: 30,
     marginBottom: 30

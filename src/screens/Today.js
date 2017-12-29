@@ -54,7 +54,7 @@ export default class Today extends Component {
       Utils.createAnswers(entry)
     }
     this.state = {
-      date: Utils.formatDateToNiceString(dateWithoutTime).toUpperCase(),
+      date: Utils.formatDate(dateWithoutTime).toUpperCase(),
       timeOfDay: Utils.getTimeOfDay(dateWithoutTime)
     }
 
@@ -97,7 +97,6 @@ export default class Today extends Component {
 
   renderAnswers() {
     return this.state.entry.answers.map((answer, i) => {
-      var text = answer.text != '' ? answer.text : 'Tap to answer...'
       var location = answer.location === '' ? '' : JSON.parse(answer.location)
       return (
         <Answer
@@ -106,7 +105,7 @@ export default class Today extends Component {
           location={location} 
           answer={answer} 
           onPress={() => this.gotoEditAnswer(answer, gradientColors[i].first, gradientColors[i].second)}
-          text={text} />
+          text={answer.text} />
       )
     })
   }

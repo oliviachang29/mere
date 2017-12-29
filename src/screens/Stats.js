@@ -3,10 +3,12 @@ import { View, Text, StyleSheet, ScrollView, Image, PixelRatio} from 'react-nati
 import GlobalStyles from '../GlobalStyles'
 import realm from '../realm'
 import Utils from '../Utils'
+import store from 'react-native-simple-store'
 // import { VictoryChart, VictoryTheme, VictoryLine } from "victory-native";
-
 var moment = require('moment');
+
 var emojis = Utils.emojis()
+var days = ['Sun', 'Mon', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat']
 var emoji_captions = [
 'very sads.',
 'somewhat sad.',
@@ -18,7 +20,6 @@ var emoji_captions = [
 function isWithinPastNumberOfDays(date, numberOfDays) {
   return (moment().diff(date, 'days') < numberOfDays)
 }
-
 
 class StatItem extends Component {
   render () {
@@ -44,44 +45,72 @@ class Stats extends Component {
   constructor(props) {
     super(props)
 
-    var entries = realm.objects('Entry')
+    var entries = realm.objects('Entry').sorted('dateCreated');
     var entryCount = entries.length
     let answers = realm.objects('Answer')
     let answersWithPhoto = answers.filtered('fileName != ""')
     let answersWithLocation = answers.filtered('location != ""')
 
     var moodTotal = 0
-    var past7Days = 0
-    var past30Days = 0
-    var pastYear = 0
+    var past7DaysCount = 0
+    past7DaysMoodTotal = 0
+    var past30DaysCount = 0
+    past30DaysMoodTotal = 0
+    var pastYearCount = 0
+    var secondToLastEntryWritten
+
     entries.map(function(entry, i) {
+      console.log(i)
       moodTotal += entry.rating
       if (isWithinPastNumberOfDays(entry.dateCreated, 365)) {
-        console.log('entry was made within last year')
-        pastYear += 1
+        // entry was made within last year
+        pastYearCount += 1
         if (isWithinPastNumberOfDays(entry.dateCreated, 30)) {
-          console.log('entry was made within last 30 days')
-          past30Days += 1
+          // entry was made within last 30 days
+          past30DaysCount += 1
+          past30DaysMoodTotal += entry.rating
           if (isWithinPastNumberOfDays(entry.dateCreated, 7)) {
-            console.log('entry was made within last 7 days')
-            past7Days += 1
+            // entry was made within last 7 days
+            past7DaysCount += 1
+            past7DaysMoodTotal += entry.rating
+            // past7Days.push({day: days[entry.dateCreated.getDay()], rating: entry.rating})
           }
         }
       }
+      // if it is the second to last entry
+      if (i === (entryCount - 1)) {
+        console.log('i ... ' + i)
+        var secondToLastEntryWritten = entry.dateCreated
+        console.log(entry.dateCreated)
+      }
     })
-    // calculate average mood and round
-    var averageMood = Math.round(moodTotal / entries.length)
 
     this.state = {
       entryCount: entryCount,
       locationsCount: answersWithLocation.length,
       photosCount: answersWithPhoto.length,
-      averageMood: averageMood,
-      past7Days: past7Days,
-      past30Days: past30Days,
-      pastYear: pastYear
+      averageMood: Math.round(moodTotal / entryCount),
+      
+      past7DaysCount: past7DaysCount,
+      past7DaysAverageMood: Math.round(past7DaysMoodTotal / past7DaysCount),
+      
+      past30DaysCount: past30DaysCount,
+      past30DaysAverageMood: Math.round(past30DaysMoodTotal / past30DaysCount),
+      
+      pastYearCount: pastYearCount,
+      // timeSinceLastEntry: moment(secondToLastEntryWritten).fromNow(true)
     }
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
+  }
+
+  componentDidMount() {
+    store.get('user')
+      .then(result => {
+        this.setState({dateJoined: Utils.formatDate(result.dateJoined)})
+      })
+      .catch(error => {
+        console.log('error: \n\n' + error)
+      })
   }
 
   render () {
@@ -91,6 +120,7 @@ class Stats extends Component {
           <Image style={[styles.photo, this.props.photoStyle]} source={require('../assets/images/avatar.png')} />
         </View>
         <Text style={[GlobalStyles.buttonStyleText, styles.yourActivityText]}>YOU</Text>
+        <Text style={[GlobalStyles.p, styles.dateJoinedText]}>joined {this.state.dateJoined}</Text>
         <View style={styles.entriesCountContainer}>
           <View style={[styles.stats_container]}>
             <StatItem 
@@ -106,23 +136,44 @@ class Stats extends Component {
         </View>
         <View style={styles.averageMood_container}>
           {/*<Text style={[GlobalStyles.buttonStyleText, styles.averageMood_title]}>AVERAGE MOOD</Text>*/}
-          <Text style={styles.averageMood_emoji}> {emojis[this.state.averageMood]} </Text> 
+          <Text style={[styles.stats_amount, styles.averageMood_emoji]}> {emojis[this.state.averageMood]} </Text> 
           <Text style={[GlobalStyles.p, styles.text]}>On average, you are {emoji_captions[this.state.averageMood]}</Text>
         </View>
-        {/*<SimpleChart />*/}
+
         <View style={[GlobalStyles.separator, styles.separator]} />
-        <Text style={[GlobalStyles.p, styles.text]}>Number of entries made in the past...</Text>
-        <View style={[styles.stats_container]}>
+
+{/* Removed because it always said "a few seconds ago" */}
+{/*     <View style={styles.container}>
+          <Text style={styles.stats_amount}>{this.state.timeSinceLastEntry}</Text>
+          <Text style={[GlobalStyles.p, styles.text]}>Time since you last wrote an entry.</Text>
+        </View>
+        <View style={[GlobalStyles.separator, styles.separator]} />
+*/}
+        <Text style={[GlobalStyles.p, styles.text]}>Average mood of the past...</Text>
+        <View style={[styles.stats_container, styles.pastDaysMood_container]}>
           <StatItem 
-            amount={this.state.past7Days}
+            amount={emojis[this.state.past7DaysAverageMood]}
             caption='7 days'
             flipped />
           <StatItem 
-            amount={this.state.past30Days}
+            amount={emojis[this.state.past30DaysAverageMood]}
+            caption='30 days'
+            flipped />
+        </View>
+
+        <View style={[GlobalStyles.separator, styles.separator]} />
+        <Text style={[GlobalStyles.p, styles.text]}>Number of entries made in the past...</Text>
+        <View style={[styles.stats_container, styles.pastDaysCount_container]}>
+          <StatItem 
+            amount={this.state.past7DaysCount}
+            caption='7 days'
+            flipped />
+          <StatItem 
+            amount={this.state.past30DaysCount}
             caption='30 days'
             flipped />
           <StatItem 
-            amount={this.state.pastYear}
+            amount={this.state.pastYearCount}
             caption='year'
             flipped />
         </View>
@@ -170,6 +221,11 @@ const styles = StyleSheet.create({
     marginTop: 20, 
     alignSelf: 'center'
   },
+  dateJoinedText: {
+    margin: 25,
+    color: '#9E9E9E',
+    alignSelf: 'center',
+  },
   separator: {
     width: '50%',
     alignSelf: 'center',
@@ -216,7 +272,7 @@ const styles = StyleSheet.create({
     // marginBottom: 30
   },
   averageMood_emoji: {
-    fontSize: 30,
+    // fontSize: 30,
     marginBottom: 15,
     alignSelf: 'center'
   },
@@ -236,6 +292,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'white',
   },
+  pastDaysMood_container: {
+    marginLeft: 100,
+    marginRight: 100
+  },
+  pastDaysCount_container: {
+    marginBottom: 60
+  }
 })
 
 module.exports = Stats
