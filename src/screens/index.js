@@ -6,7 +6,7 @@ import Notification from './Notification'
 import Today from './Today'
 import Map from './Map'
 import Photos from './Photos'
-import Settings from './Settings'
+import About from './About'
 import Locked from './Locked'
 import Stats from './Stats'
 // Entries
@@ -16,6 +16,7 @@ import NewEntry from './Entries/New'
 // Answers
 import EditAnswer from './Answers/Edit'
 import ShowAnswer from './Answers/Show'
+import MultipleAnswers from './Answers/Multiple'
 
 export default function () {
   Navigation.registerComponent('app.Notification', () => Notification)
@@ -24,13 +25,15 @@ export default function () {
   Navigation.registerComponent('app.Today', () => Today)
   Navigation.registerComponent('app.Map', () => Map)
   Navigation.registerComponent('app.Photos', () => Photos)
-  Navigation.registerComponent('app.Settings', () => Settings)
+  Navigation.registerComponent('app.About', () => About)
   Navigation.registerComponent('app.Locked', () => Locked)
   Navigation.registerComponent('app.Stats', () => Stats)
 
   Navigation.registerComponent('app.Calendar', () => Calendar)
   Navigation.registerComponent('app.EditEntry', () => EditEntry)
   Navigation.registerComponent('app.NewEntry', () => NewEntry)
+  
   Navigation.registerComponent('app.ShowAnswer', () => ShowAnswer)
   Navigation.registerComponent('app.EditAnswer', () => EditAnswer)
+  Navigation.registerComponent('app.MultipleAnswers', () => MultipleAnswers)
 }

@@ -61,11 +61,12 @@ class Map extends React.Component {
        var location = JSON.parse(answer.location)
        var coordinate = {latitude: location.latitude, longitude: location.longitude}
        var dateFormatted = Utils.formatDate(answer.dateCreated)
-       newMarker.title = dateFormatted
+       newMarker.id = answer.id
        newMarker.description = location.name
-       newMarker.coordinate = {latitude: location.latitude, longitude: location.longitude}
+       newMarker.location = answer.location
        newMarker.dateCreated = answer.dateCreated
-       // newMarker.id = answer.id
+       newMarker.coordinate = coordinate
+       newMarker.title = dateFormatted
        markers.push(newMarker)
        coordinates.push(coordinate)
     })
@@ -78,7 +79,8 @@ class Map extends React.Component {
 
     this.state = {
       region: region,
-      markers: markers
+      markers: markers,
+      answers: answers
     }
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
   }
@@ -120,18 +122,28 @@ class Map extends React.Component {
   }
 
   onMarkerPress (marker) {
-    var answer = realm.objects('Answer').filtered('dateCreated = $0', marker.dateCreated)[0]
-    this.props.navigator.showLightBox({
-      screen: 'app.ShowAnswer',
-      passProps: {
-        answer
-      },
-      style: {
-        backgroundBlur: 'dark',
-        backgroundColor: 'rgba(0, 0, 0, 0.1)',
-        tapBackgroundToDismiss: true
-      }
-    })
+    // check if there are other answers in the same place
+    let answersWithSameLocation = this.state.answers.filtered('location == $0', marker.location)
+    if (answersWithSameLocation[1]) {
+      var location = JSON.parse(marker.location)
+      var title = Utils.capitalizeAndSpace(location.name)
+      this.props.navigator.showModal({
+        screen: 'app.MultipleAnswers',
+        title: title,
+        passProps: {
+          location: marker.location
+        }
+      })
+    } else {
+      var title = Utils.capitalizeAndSpace(Utils.formatDate(marker.dateCreated))
+      this.props.navigator.showModal({
+        screen: 'app.ShowAnswer',
+        title: title,
+        passProps: {
+          id: marker.id,
+        }
+      })
+    }
   }
 }
 

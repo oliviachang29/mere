@@ -1,7 +1,7 @@
 // lightbox
 
 import React, { Component } from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Dimensions } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
 import Button from '../../components/Shared/Button'
 import Photo from '../../components/Shared/Photo'
@@ -13,10 +13,10 @@ var gradientColors = Utils.gradientColors()
 class ShowAnswer extends Component {
   static navigatorStyle = Utils.navigatorStyle()
   static navigatorButtons = {
-    leftButtons: [
+    rightButtons: [
       {
-        icon: require('../../assets/images/back-arrow.png'),
-        id: 'back',
+        icon: require('../../assets/images/x.png'),
+        id: 'x',
         disableIconTint: true,
       }
     ]
@@ -24,10 +24,12 @@ class ShowAnswer extends Component {
 
   constructor(props) {
     super(props)
-    let answer = this.props.answer
+    let answers = realm.objects('Answer');
+    let answer = realm.objects('Answer').filtered('id == $0', this.props.id)[0]
     var location = answer.location === '' ? '' : JSON.parse(answer.location)
     var source = Utils.sourceFromFileName(answer.fileName)
     this.state = {
+      answer: answer,
       location: location,
       height: answer.height + 100,
       source: source
@@ -37,11 +39,9 @@ class ShowAnswer extends Component {
 
   render () {
     var color = this.state.text ? '#4A4A4A' : '#9B9B9B'
-    var answer = this.props.answer
-    var dateWithFormatting = Utils.formatDate(answer.dateCreated).toUpperCase()
+    var answer = this.state.answer
     return (
-      <ScrollView style={[styles.innerContainer]}>
-        <Text style={[GlobalStyles.buttonStyleText, styles.date]}>{dateWithFormatting}</Text>
+      <ScrollView style={[styles.innerContainer]} showsVerticalScrollIndicator={false}>
         <Text style={[GlobalStyles.p, GlobalStyles.card_question, styles.card_question]}>{answer.question}</Text>
         <Text style={[GlobalStyles.p, GlobalStyles.card_answer, {color: color}]}>{answer.text ? answer.text : 'No answer for this question.'}</Text>
         <View style={[GlobalStyles.separator, styles.separator]} />
@@ -50,24 +50,20 @@ class ShowAnswer extends Component {
         }
         
         <Photo imageSource={this.state.source} viewStyle={styles.photo} />
-        <TouchableOpacity 
+{/*        <TouchableOpacity 
           onPress={() => this.dismissLightBox()}
           style={styles.card_close_container}>
           <Text style={[GlobalStyles.p, styles.card_close_text]}>Close</Text>
-        </TouchableOpacity>
+        </TouchableOpacity>*/}
       </ScrollView>
     )
   }
 
-  dismissLightBox() {
-    this.props.navigator.dismissLightBox();
-  }
-
   onNavigatorEvent(event) { // this is the onPress handler for the two buttons together
     if (event.type == 'NavBarButtonPress') { // this is the event type for button presses
-      if (event.id == 'back') {
+      if (event.id == 'x') {
         // pop back screen
-        this.props.navigator.pop()
+        this.props.navigator.dismissModal()
       }
     }
   }
@@ -76,7 +72,7 @@ class ShowAnswer extends Component {
 
 const styles = StyleSheet.create({
   innerContainer: {
-    width: Dimensions.get('window').width * 0.8,
+    // width: Dimensions.get('window').width * 0.8,
     // height: Dimensions.get('window').height * 0.8,
     backgroundColor: '#ffffff',
     borderRadius: 5,
@@ -95,7 +91,7 @@ const styles = StyleSheet.create({
   },
   photo: {
     marginTop: 30,
-    marginBottom: 15
+    marginBottom: 40
   },
   separator: {
     marginTop: 10

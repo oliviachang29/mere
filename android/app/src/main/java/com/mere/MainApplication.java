@@ -3,14 +3,13 @@ package com.mere;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
-import io.realm.react.RealmReactPackage;
-import com.horcrux.svg.SvgPackage;
 import com.reactnativenavigation.NavigationReactPackage;
 import com.airbnb.android.react.maps.MapsPackage;
 import com.BV.LinearGradient.LinearGradientPackage;
 import com.imagepicker.ImagePickerPackage;
 import com.arttitude360.reactnative.rngoogleplaces.RNGooglePlacesPackage;
 import com.rnfs.RNFSPackage;
+import io.realm.react.RealmReactPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
@@ -31,14 +30,13 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
-            new RealmReactPackage(),
-            new SvgPackage(),
             new NavigationReactPackage(),
             new MapsPackage(),
             new LinearGradientPackage(),
             new ImagePickerPackage(),
             new RNGooglePlacesPackage(),
-            new RNFSPackage()
+            new RNFSPackage(),
+            new RealmReactPackage()
       );
     }
   };

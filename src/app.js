@@ -35,22 +35,23 @@ Navigation.startSingleScreenApp({
 
 })
 
-TouchID.isSupported()
-  .then(supported => {
-    console.log('TouchID is supported.')
-    store.get('user')
-      .then(result => {
-        if (result.touchIDEnabled) {
-          this.props.navigator.resetTo({
-            screen: 'app.Locked'
-          })
-          console.log('Touch ID is enabled')
-        }
-      })
-      .catch(error => {
-        console.log(error)
-      })
-  })
-  .catch(error => {
-    console.log(error)
-  })
+Utils.setUpUser()
+
+// TouchID.isSupported()
+//   .then(supported => {
+//     console.log('TouchID is supported.')
+//     store.get('user')
+//       .then(result => {
+//         if (result.touchIDEnabled) {
+//           console.log('Touch ID is enabled')
+//         } else {
+//           console.log('Touch ID is not enabled')
+//         }
+//       })
+//       .catch(error => {
+//         console.log(error)
+//       })
+//   })
+//   .catch(error => {
+//     console.log(error)
+//   })

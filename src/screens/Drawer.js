@@ -7,7 +7,7 @@ class Button extends Component {
   render () {
     return (
        <TouchableOpacity onPress={this.props.onPress}>
-          <Text style={[GlobalStyles.h4, styles.button]}>{this.props.text.toUpperCase()}</Text>
+          <Text style={[GlobalStyles.buttonStyleText, styles.button]}>{this.props.text.toUpperCase()}</Text>
         </TouchableOpacity>
       )
   }
@@ -41,12 +41,19 @@ class Drawer extends Component {
     return (
       <View style={styles.container}>
         <View>
-          <Button onPress={() => this.goto('Today')} text='⏰  today' />
-          <Button onPress={() => this.goto('Calendar')} text='📅  calendar' />
-          <Button onPress={() => this.goto('Photos')} text='🌄  photos' />
-          <Button onPress={() => this.goto('Map')} text='🗺  map' />
-          <Button onPress={() => this.goto('Stats')} text='📈  stats' />
-          <Button onPress={() => this.goto('Settings')} text='⚙️  settings' />
+          {/*<View style={styles.separator} />*/}
+          <Button onPress={() => this.goto('Today')} text='today' />
+          <View style={styles.separator} />
+          <Button onPress={() => this.goto('Calendar')} text='calendar' />
+          <View style={styles.separator} />
+          <Button onPress={() => this.goto('Photos')} text='photos' />
+          <View style={styles.separator} />
+          <Button onPress={() => this.goto('Map')} text='map' />
+          <View style={styles.separator} />
+          <Button onPress={() => this.goto('Stats')} text='stats' />
+          <View style={styles.separator} />
+          <Button onPress={() => this.goto('About')} text='about' />
+          {/*<View style={styles.separator} />*/}
         </View>
         {/*<Text>currentScreen: {this.state.currentScreen}</Text>*/}
       </View>
@@ -57,23 +64,30 @@ class Drawer extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: 200,
+    // width: '60%',
     paddingLeft: 40,
-    backgroundColor: '#ffffff',
+    // backgroundColor: '#f4f4f4',
     marginTop: 30,
     flexDirection: 'column',
     justifyContent: 'space-between'
   },
   button: {
-    marginTop: 30,
+    marginTop: 20,
     fontSize: 16,
-    color: '#AAAAAA',
-    fontFamily: 'BrandonGrotesque-Medium',
-    letterSpacing: 3.87
+    color: '#4A4A4A',
+    // fontFamily: 'BrandonGrotesque-Medium',
+    // letterSpacing: 3.87
   },
   date: {
     marginBottom: 30,
     color: '#AAAAAA',
+  },
+  separator: {
+    width: '20%',
+    height: 2,
+    backgroundColor: '#f4f4f4',
+    marginTop: 20,
+    borderRadius: 100
   }
 });
 

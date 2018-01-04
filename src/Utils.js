@@ -2,7 +2,7 @@ import realm from './realm'
 import store from 'react-native-simple-store'
 var RNFS = require('react-native-fs')
 import uuid from 'uuid'
-var moment = require('moment');
+var moment = require('moment')
 
 var monthNamesShort = ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May', 'Jun.', 'Jul.', 'Aug.', 'Sept.', 'Oct.', 'Nov.', 'Dec.']
 var questions = [
@@ -172,15 +172,6 @@ let Utils = {
   },
   isBlank (text) {
     return !text.replace(/\s/g, '')
-  },
-  parseable (text) {
-    if (/^[\],:{}\s]*$/.test(text.replace(/\\["\\\/bfnrtu]/g, '@')
-      .replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']')
-      .replace(/(?:^|:|,)(?:\s*\[)+/g, ''))) {
-      return true
-    } else {
-      return false
-    }
   },
   capitalizeAndSpace (text) {
     return text.split('').join(' ').toUpperCase()

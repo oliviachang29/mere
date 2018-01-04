@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { View, Image, Text, TouchableOpacity, StyleSheet, PixelRatio } from 'react-native'
 import PhotoGrid from 'react-native-photo-grid'
 import GlobalStyles from '../../GlobalStyles'
+import Utils from '../../Utils'
 import Photo from '../Shared/Photo'
 import realm from '../../realm'
 class Grid extends React.Component {
@@ -17,7 +18,7 @@ class Grid extends React.Component {
       <PhotoGrid
         data={this.state.items}
         itemsPerRow={3}
-        itemMargin={1}
+        itemMargin={30}
         renderHeader={this.renderHeader}
         renderItem={this.renderItem.bind(this)}
       />
@@ -26,23 +27,19 @@ class Grid extends React.Component {
 
   renderItem (item, itemSize) {
     return (
-      <TouchableOpacity onPress={() => this.onPhotoPress(item.id)} key={item.i}>
+      <TouchableOpacity onPress={() => this.onPhotoPress(item)} key={item.i}>
         <Photo imageSource={item.src} photoStyle={styles.photo} />
       </TouchableOpacity>
     )
   }
 
-  onPhotoPress (id) {
-    var answer = realm.objects('Answer').filtered('id = $0', id)[0]
-    this.props.navigator.showLightBox({
+  onPhotoPress (item) {
+    var dateCreated = Utils.capitalizeAndSpace(Utils.formatDate(item.dateCreated))
+    this.props.navigator.showModal({
       screen: 'app.ShowAnswer',
+      title: dateCreated,
       passProps: {
-        answer
-      },
-      style: {
-        backgroundBlur: 'dark',
-        backgroundColor: 'rgba(0, 0, 0, 0.1)',
-        tapBackgroundToDismiss: true
+        id: item.id,
       }
     })
   }
@@ -51,7 +48,7 @@ class Grid extends React.Component {
 const styles = StyleSheet.create({
   photo: {
   	width: 100,
-    // width: '33%',
+    // width: '30%',
   	height: 100
   }
 })

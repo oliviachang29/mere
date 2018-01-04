@@ -101,17 +101,17 @@ export default class EditEntry extends Component {
           i={i}
           location={location} 
           answer={answer} 
-          onPress={() => this.gotoEditAnswer(answer, gradientColors[i].first, gradientColors[i].second)}
+          onPress={() => this.gotoEditAnswer(answer.id, gradientColors[i].first, gradientColors[i].second)}
           text={text} />
       )
     })
   }
 
-  gotoEditAnswer(answer, color1, color2){
+  gotoEditAnswer(id, color1, color2){
     this.props.navigator.push({
       screen: 'app.EditAnswer',
       title: 'A N S W E R',
-      passProps: {answer, color1, color2}
+      passProps: {id, color1, color2}
     })
   }
 

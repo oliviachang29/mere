@@ -15,6 +15,9 @@ import realm from '../realm'
 import LinearGradient from 'react-native-linear-gradient'
 import Button from '../components/Shared/Button'
 import Answer from '../components/Shared/Answer'
+// import Drawer from 'react-native-drawer'
+// import SideMenu from '../components/SideMenu'
+
 // var RNFS = require('react-native-fs')
 var gradientColors = Utils.gradientColors()
 
@@ -30,8 +33,6 @@ export default class Today extends Component {
 
     // console.log(realm.path)
     console.disableYellowBox = true
-
-    Utils.setUpUser()
 
     var date = new Date()
     realm.write(() => {
@@ -71,6 +72,20 @@ export default class Today extends Component {
     this.getEntryForToday()
   }
 
+  closeControlPanel() {
+    this._drawer.close()
+  };
+  openControlPanel() {
+    this._drawer.open()
+  };
+
+  goto(link) {
+    this.closeControlPanel()
+    this.props.navigator.handleDeepLink({
+      link: link
+    })
+  }
+
   getEntryForToday() {
     var date = new Date()
     var dateWithoutTime = new Date(date.getFullYear(), date.getMonth(), date.getDate())
@@ -104,7 +119,7 @@ export default class Today extends Component {
           i={i}
           location={location} 
           answer={answer} 
-          onPress={() => this.gotoEditAnswer(answer, gradientColors[i].first, gradientColors[i].second)}
+          onPress={() => this.gotoEditAnswer(answer.id, gradientColors[i].first, gradientColors[i].second)}
           text={answer.text} />
       )
     })
@@ -158,11 +173,15 @@ export default class Today extends Component {
 
   // NAVIGATOR
 
-  gotoEditAnswer(answer, color1, color2){
+  gotoEditAnswer(id, color1, color2){
     this.props.navigator.push({
       screen: 'app.EditAnswer',
       title: 'A N S W E R',
-      passProps: {answer, color1, color2}
+      passProps: {
+        id,
+        color1,
+        color2
+      }
     })
   }
 
@@ -173,6 +192,7 @@ export default class Today extends Component {
           side: 'left',
           to: 'open'
         });
+        // this.openControlPanel()
       }
     } else if (event.type == 'DeepLink') {
       this.props.navigator.resetTo({

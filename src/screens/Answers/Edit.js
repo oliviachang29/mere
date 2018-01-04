@@ -28,12 +28,14 @@ class EditAnswer extends Component {
 
   constructor(props) {
     super(props)
-    var answer = this.props.answer
+    let answers = realm.objects('Answer');
+    var answer = realm.objects('Answer').filtered('id == $0', this.props.id)[0]
     var location = answer.location === '' ? '' : JSON.parse(answer.location)
 
     var source = Utils.sourceFromFileName(answer.fileName)
 
     this.state = {
+      answer: answer,
       text: answer.text,
       height: answer.height,
       location: location,
@@ -51,7 +53,7 @@ class EditAnswer extends Component {
       console.log(place);
       this.setState({location: place})
       realm.write(() => {
-        this.props.answer.location = JSON.stringify(place)
+        this.state.answer.location = JSON.stringify(place)
       })
     })
     .catch(error => console.log(error.message));  // error is a Javascript Error object
@@ -60,7 +62,7 @@ class EditAnswer extends Component {
   removeLocation() {
     this.setState({location: ''})
     realm.write(() => {
-      this.props.answer.location = ''
+      this.state.answer.location = ''
     })
   }
 
@@ -83,7 +85,7 @@ class EditAnswer extends Component {
     return (
       <View style={GlobalStyles.pullRight_container}>
         <PhotoUpload 
-          answer={this.props.answer} 
+          answer={this.state.answer} 
           imageSource={this.state.imageSource}
           onUpload={(imageSource) => {this.setState({imageSource: imageSource})}}
           photo />
@@ -94,7 +96,7 @@ class EditAnswer extends Component {
   onEndEditing(state) {
     this.setState(state)
     realm.write(() => {
-      this.props.answer.text = state.text
+      this.state.answer.text = state.text
     })
   }
 
@@ -105,7 +107,7 @@ class EditAnswer extends Component {
       <KeyboardAwareScrollView style={styles.innerContainer} extraHeight={140}>
         <View style={[GlobalStyles.shadow, styles.innerContainer, GlobalStyles.card_container]}>
           <View style={styles.card_subheadingContainer}>
-            <Text style={[GlobalStyles.h4, GlobalStyles.card_textInput_prompt]}>{this.props.answer.question}</Text>
+            <Text style={[GlobalStyles.h4, GlobalStyles.card_textInput_prompt]}>{this.state.answer.question}</Text>
           </View>
           <View style={GlobalStyles.card_textInput_container}>
             <TextInput
@@ -114,7 +116,7 @@ class EditAnswer extends Component {
               editable
               multiline
               placeholder="Write about your day here..."
-              placeholderTextColor="#4A4A4A"
+              placeholderTextColor="#9B9B9B"
               defaultValue={state.text}
               onEndEditing={() => this.onEndEditing(state)}
               onChangeText={(text) => {state.text = text}}
@@ -139,8 +141,8 @@ class EditAnswer extends Component {
       if (event.id == 'x') {
         Keyboard.dismiss()
         realm.write(() => {
-          this.props.answer.text = this.state.text
-          this.props.answer.height = this.state.height
+          this.state.answer.text = this.state.text
+          this.state.answer.height = this.state.height
         })
         // close modal
         this.props.navigator.dismissAllModals()

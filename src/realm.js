@@ -33,5 +33,5 @@ Answer.schema = {
 
 export default new Realm({
   schema: [Entry, Answer],
-  schemaVersion: 31
+  schemaVersion: 34
 })
