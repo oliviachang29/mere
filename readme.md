@@ -10,5 +10,5 @@
 	<img src="https://s3.amazonaws.com/github-demo-images/mere/1.png" height="375">
 	<img src="https://s3.amazonaws.com/github-demo-images/mere/2.png" height="375">
 	<img src="https://s3.amazonaws.com/github-demo-images/mere/3.png" height="375">
-	<img src="https://s3.amazonaws.com/github-demo-images/mere/4.png" height="375">
+	<img src="https://s3.amazonaws.com/github-demo-images/mere/6.png" height="375">
 </div>
