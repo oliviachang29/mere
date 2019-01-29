@@ -16,8 +16,8 @@ class About extends Component {
   }
 
   render () {
-    var version = '0.0.1'
-    var build = '1'
+    var version = '0.0.3'
+    var build = '3'
     var year = moment().year();
     return (
       <ScrollView style={[GlobalStyles.innerContainer, styles.innerContainer]}>
