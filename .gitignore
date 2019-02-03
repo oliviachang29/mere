@@ -2,6 +2,10 @@
 #
 .DS_Store
 
+# API Keys
+config.env
+.env
+
 # Xcode
 #
 build/
