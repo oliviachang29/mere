@@ -10,6 +10,5 @@
 	<img src="https://s3.amazonaws.com/github-demo-images/mere/6.png" height="375">
 </div>
 
-Link to app store: https://itunes.apple.com/us/app/mere-journaling-simplified/id1331292513?mt=8
 
-Link to video: https://youtu.be/EZs5ZZv6OdI
+[Download on App Store](https://itunes.apple.com/us/app/mere-journaling-simplified/id1331292513?mt=8)
